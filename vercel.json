@@ -1,0 +1,6 @@
+{
+  "version": 2,
+  "name": "payment-recovery-framework",
+  "cleanUrls": true,
+  "trailingSlash": false
+}
