@@ -746,8 +746,12 @@ document.addEventListener('DOMContentLoaded', () => {
       tamperBtn.disabled = true;
       tamperBtn.textContent = '⚠️ Tampering Detected & Blocked';
 
-      logUserAction(currentTxnId, '🚨 Simulated tamper attempt (₹1,499 ➔ ₹1,999). SHA-256 mismatch detected; auto-refund blocked.');
-      addEngineLog($('#engine-log'), getLiveTime(), '🚨 Cryptographic verification failed! Signature digest mismatch. Evidence rejected.', 'danger');
+      // Automatically update the terminal state in Page 7 & halt engine/tokens
+      applyTerminalState(
+        'INVALID_TAMPERED',
+        'Payload amount corrupted in transit (₹1,499 ➔ ₹1,999). Cryptographic SHA-256 digest verification failed. Auto-refund permanently blocked.',
+        'status-danger'
+      );
     });
   }
 
