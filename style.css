@@ -150,25 +150,57 @@ body::before {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: var(--text-muted);
+  background: #94a3b8; /* Neutral gray by default - NO blinking on load */
   flex-shrink: 0;
+  transition: all 0.3s ease;
 }
 
-.txn-tab-btn.active .badge-dot { background: var(--accent-blue); }
+/* Idle / Ready state - Clean subtle gray */
+.txn-tab-btn.idle .badge-dot,
+.txn-tab-btn.ready .badge-dot {
+  background: #cbd5e1;
+  box-shadow: none;
+}
 
-/* Blinking RED indicator when transaction is in progress / not stopped */
+.txn-tab-btn.active .badge-dot {
+  background: var(--accent-blue);
+}
+
+/* Only BLINKS RED when user has clicked PAY and payment failed / actively monitoring */
 .txn-tab-btn.running .badge-dot,
-.txn-tab-btn.unstopped .badge-dot {
+.txn-tab-btn.failed_monitoring .badge-dot {
   background: #ef4444;
   box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.7);
   animation: pulseRedBlink 1.2s infinite cubic-bezier(0.66, 0, 0, 1);
 }
 
-.txn-tab-btn.paused .badge-dot { background: var(--warning); }
-.txn-tab-btn.refunded .badge-dot { background: var(--success); }
-.txn-tab-btn.reversed .badge-dot { background: #10b981; }
-.txn-tab-btn.reconciled .badge-dot { background: #f59e0b; }
-.txn-tab-btn.tampered .badge-dot { background: #dc2626; }
+.txn-tab-btn.paused .badge-dot { 
+  background: #f59e0b; 
+  box-shadow: none;
+}
+
+/* SOLID GREEN when transaction is refunded / complete */
+.txn-tab-btn.refunded .badge-dot { 
+  background: #10b981; 
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.25);
+}
+
+.txn-tab-btn.reversed .badge-dot { 
+  background: #059669; 
+  box-shadow: 0 0 0 2px rgba(5, 150, 105, 0.25);
+}
+
+.txn-tab-btn.reconciled .badge-dot,
+.txn-tab-btn.reconciliation .badge-dot { 
+  background: #f59e0b; 
+  box-shadow: 0 0 0 2px rgba(245, 158, 11, 0.25);
+}
+
+.txn-tab-btn.tampered .badge-dot,
+.txn-tab-btn.invalid_tampered .badge-dot { 
+  background: #dc2626; 
+  box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.25);
+}
 
 @keyframes pulseRedBlink {
   0% {

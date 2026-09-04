@@ -3,7 +3,7 @@
 document.addEventListener('DOMContentLoaded', () => {
 
   // =============================================
-  // UTILITIES & STATE
+  // UTILITIES & GLOBAL HELPERS
   // =============================================
   const sleep = (ms) => new Promise(resolve => setTimeout(resolve, ms));
   const $ = (sel) => document.querySelector(sel);
@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', () => {
     return d.toLocaleTimeString('en-US', { hour12: false });
   };
 
-  // 5 Real-World Transactions Database
+  // 5 COMPLETELY INDEPENDENT TRANSACTION STATE RECORDS
   const transactionDatabase = [
     {
       id: 1,
@@ -22,15 +22,15 @@ document.addEventListener('DOMContentLoaded', () => {
       orderId: 'ORD-20260904-7842',
       amount: 1499,
       method: 'UPI (GooglePay / Axis Bank)',
-      status: 'UNSTOPPED', // unstopped | refunded | reversed | reconciled | tampered | paused
+      status: 'IDLE', // IDLE | PROCESSING | FAILED_MONITORING | PAUSED | REFUNDED | REVERSED | RECONCILIATION | INVALID_TAMPERED
       uptime: 0,
       token: 'A7F3-19BC-42D8',
       rrn: 'RRN4829104821',
       gwStatus: 'TIMEOUT_RETRY_FAILED',
       bankStatus: 'DEBIT_CONFIRMED',
-      terminalState: null,
+      terminalReason: null,
       history: [
-        { time: getLiveTime(-10), text: 'Transaction initialized. Monitoring engine active.' }
+        { time: getLiveTime(), text: 'Transaction initialized in IDLE state. Ready for payment.' }
       ]
     },
     {
@@ -39,15 +39,15 @@ document.addEventListener('DOMContentLoaded', () => {
       orderId: 'ORD-20260904-7843',
       amount: 2850,
       method: 'UPI (PhonePe / HDFC Bank)',
-      status: 'UNSTOPPED',
+      status: 'IDLE',
       uptime: 0,
       token: 'E2C8-71FA-98D1',
       rrn: 'RRN4829104822',
       gwStatus: 'DROPPED_ACK',
       bankStatus: 'DELAYED_CONFIRMATION',
-      terminalState: null,
+      terminalReason: null,
       history: [
-        { time: getLiveTime(-8), text: 'Transaction initialized. Waiting for bank acknowledgment.' }
+        { time: getLiveTime(), text: 'Transaction initialized in IDLE state. Ready for payment.' }
       ]
     },
     {
@@ -56,15 +56,15 @@ document.addEventListener('DOMContentLoaded', () => {
       orderId: 'ORD-20260904-7844',
       amount: 899,
       method: 'UPI (Paytm / SBI Bank)',
-      status: 'UNSTOPPED',
+      status: 'IDLE',
       uptime: 0,
       token: '9D44-B6AC-33E4',
       rrn: 'RRN4829104823',
       gwStatus: 'DECLINED_AT_SWITCH',
       bankStatus: 'NO_DEBIT_RECORDED',
-      terminalState: null,
+      terminalReason: null,
       history: [
-        { time: getLiveTime(-6), text: 'Transaction initialized. No debit confirmation received.' }
+        { time: getLiveTime(), text: 'Transaction initialized in IDLE state. Ready for payment.' }
       ]
     },
     {
@@ -73,15 +73,15 @@ document.addEventListener('DOMContentLoaded', () => {
       orderId: 'ORD-20260904-7845',
       amount: 4500,
       method: 'UPI (Cred / ICICI Bank)',
-      status: 'UNSTOPPED',
+      status: 'IDLE',
       uptime: 0,
       token: 'C1F8-03DE-77B2',
       rrn: 'RRN4829104824',
       gwStatus: 'CONNECTION_RESET',
       bankStatus: 'DEBIT_CONFIRMED',
-      terminalState: null,
+      terminalReason: null,
       history: [
-        { time: getLiveTime(-4), text: 'Transaction initialized. Cryptographic proof generated.' }
+        { time: getLiveTime(), text: 'Transaction initialized in IDLE state. Ready for payment.' }
       ]
     },
     {
@@ -90,32 +90,30 @@ document.addEventListener('DOMContentLoaded', () => {
       orderId: 'ORD-20260904-7846',
       amount: 620,
       method: 'UPI (BHIM / PNB Bank)',
-      status: 'UNSTOPPED',
+      status: 'IDLE',
       uptime: 0,
       token: 'F7A2-8E1D-11C9',
       rrn: 'RRN4829104825',
       gwStatus: 'SWITCH_TIMEOUT',
       bankStatus: 'UNRESOLVED_BATCH',
-      terminalState: null,
+      terminalReason: null,
       history: [
-        { time: getLiveTime(-2), text: 'Transaction initialized. Awaiting network routing.' }
+        { time: getLiveTime(), text: 'Transaction initialized in IDLE state. Ready for payment.' }
       ]
     }
   ];
 
   let currentTxnId = 1;
-  let isEngineRunning = true;
-  let isTokenRotationActive = true;
   let tokenInterval = null;
   let engineInterval = null;
   let countdownTimer = null;
   let countdownVal = 4;
 
-  const animatedPages = new Set();
   const tokenList = ['A7F3-19BC', 'E2C8-71FA', '9D44-B6AC', 'C1F8-03DE', 'F7A2-8E1D', 'B3C9-54FA', '6E1D-A9C7'];
   let tokenIndex = 0;
+  const animatedPages = new Set();
 
-  // Log an action to the active transaction's private timeline
+  // Logging User Action into current transaction's timeline
   function logUserAction(txnId, text) {
     const txn = transactionDatabase.find(t => t.id === txnId);
     if (!txn) return;
@@ -140,62 +138,161 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // =============================================
-  // 1. TRANSACTION SWITCHER & UI SYNC
+  // 1. REFRESH TOP TAB INDICATORS
+  // =============================================
+  function refreshTabIndicators() {
+    transactionDatabase.forEach(txn => {
+      const btn = $(`.txn-tab-btn[data-txnid="${txn.id}"]`);
+      if (!btn) return;
+      btn.classList.remove('idle', 'ready', 'running', 'failed_monitoring', 'paused', 'refunded', 'reversed', 'reconciled', 'reconciliation', 'tampered', 'invalid_tampered');
+
+      if (txn.status === 'IDLE') {
+        btn.classList.add('idle'); // Neutral gray, no blinking
+      } else if (txn.status === 'FAILED_MONITORING' || txn.status === 'PROCESSING') {
+        btn.classList.add('failed_monitoring'); // Blinking RED dot
+      } else if (txn.status === 'REFUNDED') {
+        btn.classList.add('refunded'); // Solid GREEN dot
+      } else if (txn.status === 'REVERSED') {
+        btn.classList.add('reversed'); // Solid GREEN/EMERALD dot
+      } else if (txn.status === 'RECONCILIATION') {
+        btn.classList.add('reconciled'); // Solid AMBER dot
+      } else if (txn.status === 'INVALID_TAMPERED') {
+        btn.classList.add('tampered'); // Solid RED dot
+      } else if (txn.status === 'PAUSED') {
+        btn.classList.add('paused');
+      }
+    });
+  }
+
+  // =============================================
+  // 2. SWITCH ACTIVE TRANSACTION & SYNC ISOLATED UI
   // =============================================
   function switchActiveTransaction(txnNum) {
     currentTxnId = txnNum;
     const txn = transactionDatabase.find(t => t.id === txnNum) || transactionDatabase[0];
 
-    // Update Top Tabs
+    // 1. Update top tabs active class
     $$('.txn-tab-btn').forEach(btn => {
       const id = parseInt(btn.dataset.txnid);
       btn.classList.toggle('active', id === txnNum);
     });
 
-    // Update Page 1
+    // 2. Update Page 1 Order UI
     if ($('#display-txnid')) $('#display-txnid').textContent = txn.txnId;
     if ($('#display-orderid')) $('#display-orderid').textContent = txn.orderId;
     if ($('#display-amount')) $('#display-amount').textContent = '₹' + txn.amount.toLocaleString();
     if ($('#pay-btn-amount')) $('#pay-btn-amount').textContent = '₹' + txn.amount.toLocaleString();
     if ($('#display-init-time')) $('#display-init-time').textContent = getLiveTime();
 
-    // Update Ledger
+    // 3. Update Isolated State on Page 1
+    const payBtn = $('#pay-btn');
+    const flowDiv = $('#payment-flow');
+    const statusDiv = $('#payment-status');
+    const statusBadge = $('#display-status-badge');
+
+    if (txn.status === 'IDLE') {
+      // Clean fresh ready state
+      if (flowDiv) flowDiv.classList.add('hidden');
+      if (statusDiv) statusDiv.classList.add('hidden');
+      if (payBtn) {
+        payBtn.disabled = false;
+        payBtn.textContent = `🔐 PAY ₹${txn.amount.toLocaleString()}`;
+        payBtn.className = 'btn btn-primary btn-large btn-full';
+      }
+      if (statusBadge) {
+        statusBadge.className = 'status-badge status-pending';
+        statusBadge.textContent = '⏳ Ready';
+      }
+    } else if (txn.status === 'PROCESSING') {
+      if (flowDiv) flowDiv.classList.remove('hidden');
+      if (statusDiv) statusDiv.classList.add('hidden');
+      if (payBtn) {
+        payBtn.disabled = true;
+        payBtn.textContent = '⏳ Processing Transfer...';
+        payBtn.className = 'btn btn-primary btn-large btn-full';
+      }
+    } else if (txn.status === 'FAILED_MONITORING') {
+      // Failed state actively monitoring
+      if (flowDiv) flowDiv.classList.remove('hidden');
+      if (statusDiv) statusDiv.classList.remove('hidden');
+      if (payBtn) {
+        payBtn.disabled = true;
+        payBtn.textContent = '🔴 Payment Failed (Monitoring Debit)';
+        payBtn.className = 'btn btn-danger btn-large btn-full';
+      }
+      if (statusBadge) {
+        statusBadge.className = 'status-badge status-danger';
+        statusBadge.textContent = '🔴 Failed (Monitoring)';
+      }
+    } else {
+      // Terminal states (REFUNDED, REVERSED, RECONCILIATION, INVALID_TAMPERED)
+      if (flowDiv) flowDiv.classList.remove('hidden');
+      if (statusDiv) statusDiv.classList.remove('hidden');
+      if (payBtn) {
+        payBtn.disabled = true;
+        payBtn.textContent = `🏁 Completed (${txn.status})`;
+        payBtn.className = txn.status === 'REFUNDED' || txn.status === 'REVERSED' ? 'btn btn-success btn-large btn-full' : 'btn btn-secondary btn-large btn-full';
+      }
+      if (statusBadge) {
+        statusBadge.className = txn.status === 'REFUNDED' || txn.status === 'REVERSED' ? 'status-badge status-success' : 'status-badge status-warning';
+        statusBadge.textContent = `🏁 ${txn.status}`;
+      }
+    }
+
+    // 4. Update Ledger
     if ($('#ledger-txnid')) $('#ledger-txnid').textContent = txn.txnId;
     if ($('#ledger-orderid')) $('#ledger-orderid').textContent = txn.orderId;
     if ($('#ledger-amount')) $('#ledger-amount').textContent = '₹' + txn.amount.toLocaleString();
     if ($('#ledger-token')) $('#ledger-token').textContent = txn.token;
     if ($('#ledger-time')) $('#ledger-time').textContent = getLiveTime() + '.104';
+    if ($('#ledger-state')) {
+      $('#ledger-state').className = txn.status === 'REFUNDED' ? 'status-badge status-success' : 'status-badge status-pending';
+      $('#ledger-state').textContent = txn.status;
+    }
 
-    // Update Crypto Token
+    // 5. Update Crypto Token
     if ($('#crypto-token-display')) $('#crypto-token-display').textContent = txn.token;
     if ($('#token-value')) $('#token-value').textContent = txn.token.split('-').slice(0, 2).join('-');
 
-    // Update Packet UI
+    // 6. Update Packet UI & Network Transit Animation Sync
     if ($('#packet-txnid')) $('#packet-txnid').textContent = txn.txnId;
     if ($('#packet-token')) $('#packet-token').textContent = txn.token;
     if ($('#packet-time')) $('#packet-time').textContent = getLiveTime() + '.000';
 
-    // Update Engine Monitor
+    const packetDot = $('#packet-transit-dot');
+    if (packetDot) {
+      if (txn.status === 'FAILED_MONITORING') {
+        packetDot.classList.add('animating-gw-bank'); // Active animation Gateway -> Bank
+      } else if (txn.status === 'REFUNDED' || txn.status === 'REVERSED') {
+        packetDot.classList.remove('animating-gw-bank');
+        packetDot.style.left = 'calc(100% - 80px)'; // Resting at Bank
+      } else {
+        packetDot.classList.remove('animating-gw-bank');
+        packetDot.style.left = '50%'; // Resting at Gateway
+      }
+    }
+
+    // 7. Update Engine State Monitor
     if ($('#engine-current-txnid')) $('#engine-current-txnid').textContent = txn.txnId;
     if ($('#user-action-txnid')) $('#user-action-txnid').textContent = `TXN-0${txn.id}`;
 
-    // Render timeline for switched txn
-    renderUserActionTimeline(txn);
-
-    // Sync active state UI
-    if (txn.status === 'UNSTOPPED' || txn.status === 'RUNNING') {
-      isEngineRunning = true;
-      isTokenRotationActive = true;
+    if (txn.status === 'FAILED_MONITORING') {
       if ($('#engine-indicator-badge')) {
         $('#engine-indicator-badge').className = 'status-badge status-danger';
         $('#engine-indicator-badge').textContent = '🔴 ACTIVE (UNSTOPPED)';
       }
       if ($('#engine-live-dot')) $('#engine-live-dot').className = 'engine-dot active';
       if ($('#engine-live-text')) $('#engine-live-text').textContent = 'ACTIVE POLLING';
-      if ($('#token-timer')) $('#token-timer').innerHTML = `Next rotation cycle in: <span id="token-countdown">4</span>s`;
+      if ($('#token-timer')) $('#token-timer').innerHTML = `Next rotation cycle in: <span id="token-countdown">${countdownVal}</span>s`;
+    } else if (txn.status === 'IDLE') {
+      if ($('#engine-indicator-badge')) {
+        $('#engine-indicator-badge').className = 'status-badge status-info';
+        $('#engine-indicator-badge').textContent = '⏳ STANDBY (IDLE)';
+      }
+      if ($('#engine-live-dot')) $('#engine-live-dot').className = 'engine-dot inactive';
+      if ($('#engine-live-text')) $('#engine-live-text').textContent = 'STANDBY (Awaiting Payment)';
+      if ($('#token-timer')) $('#token-timer').innerHTML = `<span>Engine Standby</span>`;
     } else {
-      isEngineRunning = false;
-      isTokenRotationActive = false;
       if ($('#engine-indicator-badge')) {
         $('#engine-indicator-badge').className = 'status-badge status-success';
         $('#engine-indicator-badge').textContent = `🏁 TERMINAL: ${txn.status}`;
@@ -205,33 +302,14 @@ document.addEventListener('DOMContentLoaded', () => {
       if ($('#token-timer')) $('#token-timer').innerHTML = `<strong class="text-green">🔒 Rotation Frozen — ${txn.status}</strong>`;
     }
 
-    addEngineLog($('#engine-log'), getLiveTime(), `Switched context to ${txn.txnId} (Order ${txn.orderId})`, 'info');
+    // Render this transaction's dynamic user action timeline
+    renderUserActionTimeline(txn);
+    refreshTabIndicators();
+
+    addEngineLog($('#engine-log'), getLiveTime(), `Switched view to ${txn.txnId} [Status: ${txn.status}]`, 'info');
   }
 
-  // Update tabs visual status classes (RED BLINKING IF UNSTOPPED)
-  function refreshTabIndicators() {
-    transactionDatabase.forEach(txn => {
-      const btn = $(`.txn-tab-btn[data-txnid="${txn.id}"]`);
-      if (!btn) return;
-      btn.classList.remove('running', 'unstopped', 'paused', 'refunded', 'reversed', 'reconciled', 'tampered');
-
-      if (txn.status === 'UNSTOPPED' || txn.status === 'RUNNING') {
-        btn.classList.add('unstopped'); // Blinks red
-      } else if (txn.status === 'REFUNDED') {
-        btn.classList.add('refunded'); // Solid green
-      } else if (txn.status === 'REVERSED') {
-        btn.classList.add('reversed'); // Solid blue/emerald
-      } else if (txn.status === 'RECONCILIATION') {
-        btn.classList.add('reconciled'); // Solid yellow/amber
-      } else if (txn.status === 'INVALID_TAMPERED') {
-        btn.classList.add('tampered'); // Solid red
-      } else if (txn.status === 'PAUSED') {
-        btn.classList.add('paused');
-      }
-    });
-  }
-
-  // Bind tab clicks
+  // Bind top tabs
   $$('.txn-tab-btn').forEach(btn => {
     btn.addEventListener('click', () => {
       switchActiveTransaction(parseInt(btn.dataset.txnid));
@@ -239,22 +317,99 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // =============================================
-  // 2. 4 TERMINAL STATE ACTIONS (PAGE 7)
+  // 3. INDEPENDENT PAYMENT ACTION (PAGE 1)
+  // =============================================
+  const payBtn = $('#pay-btn');
+  if (payBtn) {
+    payBtn.addEventListener('click', async () => {
+      const txn = transactionDatabase.find(t => t.id === currentTxnId);
+      if (!txn || txn.status !== 'IDLE') return;
+
+      txn.status = 'PROCESSING';
+      refreshTabIndicators();
+
+      payBtn.disabled = true;
+      payBtn.textContent = '⏳ Processing UPI Transfer...';
+
+      logUserAction(txn.id, `User clicked Pay ₹${txn.amount.toLocaleString()} via UPI.`);
+
+      const flowDiv = $('#payment-flow');
+      if (flowDiv) flowDiv.classList.remove('hidden');
+
+      const flowNodes = flowDiv.querySelectorAll('.flow-node');
+      const flowArrows = flowDiv.querySelectorAll('.flow-arrow');
+
+      // Sequentially light up nodes for active transaction
+      for (let i = 0; i < flowNodes.length; i++) {
+        flowNodes[i].classList.remove('danger', 'active');
+        await sleep(400);
+        flowNodes[i].classList.add('active');
+        if (i < flowArrows.length) flowArrows[i].classList.add('active');
+      }
+
+      // Bank Gateway Drop / Timeout Failure
+      await sleep(500);
+      flowNodes[flowNodes.length - 1].classList.remove('active');
+      flowNodes[flowNodes.length - 1].classList.add('danger');
+
+      // Set state to FAILED_MONITORING
+      txn.status = 'FAILED_MONITORING';
+      refreshTabIndicators(); // Tab dot now blinks RED!
+
+      await sleep(300);
+      const statusDiv = $('#payment-status');
+      if (statusDiv) {
+        statusDiv.classList.remove('hidden');
+        statusDiv.style.animation = 'fadeInUp 0.35s ease';
+      }
+
+      payBtn.textContent = '🔴 Payment Failed (Monitoring Debit)';
+      payBtn.className = 'btn btn-danger btn-large btn-full';
+
+      if ($('#display-status-badge')) {
+        $('#display-status-badge').className = 'status-badge status-danger';
+        $('#display-status-badge').textContent = '🔴 Failed (Monitoring)';
+      }
+
+      // Start network transit animation Gateway -> Bank
+      const packetDot = $('#packet-transit-dot');
+      if (packetDot) packetDot.classList.add('animating-gw-bank');
+
+      // Start engine & rotation
+      startEngine();
+      startTokenRotation();
+
+      if ($('#engine-indicator-badge')) {
+        $('#engine-indicator-badge').className = 'status-badge status-danger';
+        $('#engine-indicator-badge').textContent = '🔴 ACTIVE (UNSTOPPED)';
+      }
+      if ($('#engine-live-dot')) $('#engine-live-dot').className = 'engine-dot active';
+      if ($('#engine-live-text')) $('#engine-live-text').textContent = 'ACTIVE POLLING';
+
+      logUserAction(txn.id, '🔴 Payment Failed at Bank Gateway. Continuous evidence monitoring and Gateway ➔ Bank verification engine started.');
+      addEngineLog($('#engine-log'), getLiveTime(), `Payment failure on ${txn.txnId}. Continuous engine & Gateway ➔ Bank verification started.`, 'warning');
+    });
+  }
+
+  // =============================================
+  // 4. TERMINAL STATE ACTIONS (PAGE 7)
   // =============================================
   function applyTerminalState(state, reason, badgeClass = 'status-success') {
     const txn = transactionDatabase.find(t => t.id === currentTxnId);
     if (!txn) return;
 
     txn.status = state;
-    txn.terminalState = state;
-    isEngineRunning = false;
-    isTokenRotationActive = false;
+    txn.terminalReason = reason;
 
-    if (tokenInterval) clearInterval(tokenInterval);
-    if (engineInterval) clearInterval(engineInterval);
-
-    // Refresh tabs
+    // Refresh indicators (blinking red stops, turns solid green/amber/red)
     refreshTabIndicators();
+
+    // Stop network transit animation
+    const packetDot = $('#packet-transit-dot');
+    if (packetDot) {
+      packetDot.classList.remove('animating-gw-bank');
+      packetDot.style.left = state === 'REFUNDED' || state === 'REVERSED' ? 'calc(100% - 80px)' : '50%';
+    }
 
     // Update UI elements
     if ($('#engine-indicator-badge')) {
@@ -269,6 +424,19 @@ document.addEventListener('DOMContentLoaded', () => {
       $('#token-timer').innerHTML = `<strong class="text-green">🔒 Token Rotation Frozen — ${state}</strong>`;
     }
 
+    // Update Page 1 Pay button
+    const payBtn = $('#pay-btn');
+    if (payBtn) {
+      payBtn.disabled = true;
+      payBtn.textContent = `🏁 Completed (${state})`;
+      payBtn.className = state === 'REFUNDED' || state === 'REVERSED' ? 'btn btn-success btn-large btn-full' : 'btn btn-secondary btn-large btn-full';
+    }
+
+    if ($('#display-status-badge')) {
+      $('#display-status-badge').className = `status-badge ${badgeClass}`;
+      $('#display-status-badge').textContent = `🏁 ${state}`;
+    }
+
     if ($('#ledger-state')) {
       $('#ledger-state').className = `status-badge ${badgeClass}`;
       $('#ledger-state').textContent = state;
@@ -278,13 +446,6 @@ document.addEventListener('DOMContentLoaded', () => {
       $('#ledger-verification').textContent = state === 'INVALID_TAMPERED' ? 'REJECTED_TAMPER' : 'VERIFIED';
     }
 
-    // Packet animation halt
-    if ($('#packet-transit-dot')) {
-      $('#packet-transit-dot').classList.remove('animating-gw-bank');
-      $('#packet-transit-dot').style.left = 'calc(100% - 80px)';
-    }
-
-    // Log to user action timeline & engine log
     logUserAction(txn.id, `Applied Terminal State [${state}]: ${reason}`);
     addEngineLog($('#engine-log'), getLiveTime(), `🛑 [TERMINAL STATE] ${txn.txnId} ➔ ${state}. ${reason}`, state === 'INVALID_TAMPERED' ? 'danger' : 'success');
   }
@@ -349,25 +510,30 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Global Start / Pause
+  // Global Start / Pause Buttons
   const globalStartBtn = $('#global-start-btn');
   if (globalStartBtn) {
     globalStartBtn.addEventListener('click', () => {
       const txn = transactionDatabase.find(t => t.id === currentTxnId);
-      if (txn) txn.status = 'UNSTOPPED';
+      if (!txn) return;
+      txn.status = 'FAILED_MONITORING';
       refreshTabIndicators();
-      isEngineRunning = true;
-      isTokenRotationActive = true;
+
       startTokenRotation();
       startEngine();
+
+      const packetDot = $('#packet-transit-dot');
+      if (packetDot) packetDot.classList.add('animating-gw-bank');
+
       if ($('#engine-indicator-badge')) {
         $('#engine-indicator-badge').className = 'status-badge status-danger';
         $('#engine-indicator-badge').textContent = '🔴 ACTIVE (UNSTOPPED)';
       }
       if ($('#engine-live-dot')) $('#engine-live-dot').className = 'engine-dot active';
       if ($('#engine-live-text')) $('#engine-live-text').textContent = 'ACTIVE POLLING';
-      logUserAction(currentTxnId, '▶ Manually resumed monitoring engine.');
-      addEngineLog($('#engine-log'), getLiveTime(), `▶ Monitoring engine resumed for ${$('#display-txnid').textContent}`, 'info');
+
+      logUserAction(txn.id, '▶ Manually started/resumed monitoring engine.');
+      addEngineLog($('#engine-log'), getLiveTime(), `▶ Monitoring engine started for ${txn.txnId}`, 'info');
     });
   }
 
@@ -375,27 +541,27 @@ document.addEventListener('DOMContentLoaded', () => {
   if (globalPauseBtn) {
     globalPauseBtn.addEventListener('click', () => {
       const txn = transactionDatabase.find(t => t.id === currentTxnId);
-      if (txn) txn.status = 'PAUSED';
+      if (!txn) return;
+      txn.status = 'PAUSED';
       refreshTabIndicators();
-      isEngineRunning = false;
-      isTokenRotationActive = false;
-      if (tokenInterval) clearInterval(tokenInterval);
-      if (engineInterval) clearInterval(engineInterval);
+
+      const packetDot = $('#packet-transit-dot');
+      if (packetDot) packetDot.classList.remove('animating-gw-bank');
+
       if ($('#engine-live-text')) $('#engine-live-text').textContent = 'PAUSED';
-      logUserAction(currentTxnId, '⏸ Manually paused monitoring engine.');
+      logUserAction(txn.id, '⏸ Manually paused monitoring engine.');
       addEngineLog($('#engine-log'), getLiveTime(), `⏸ Monitoring engine paused manually`, 'warning');
     });
   }
 
   // =============================================
-  // 3. 120-SECOND MONITORING TIMEOUT ENGINE
+  // 5. 120-SECOND MONITORING TIMEOUT ENGINE
   // =============================================
   setInterval(() => {
     transactionDatabase.forEach(txn => {
-      if (txn.status === 'UNSTOPPED' || txn.status === 'RUNNING') {
+      if (txn.status === 'FAILED_MONITORING') {
         txn.uptime++;
 
-        // Update active transaction uptime text
         if (txn.id === currentTxnId && $('#engine-uptime')) {
           const h = String(Math.floor(txn.uptime / 3600)).padStart(2, '0');
           const m = String(Math.floor((txn.uptime % 3600) / 60)).padStart(2, '0');
@@ -403,7 +569,7 @@ document.addEventListener('DOMContentLoaded', () => {
           $('#engine-uptime').textContent = `${h}:${m}:${s}`;
         }
 
-        // 120 Seconds Timeout Trigger!
+        // 120 Seconds Timeout
         if (txn.uptime === 120) {
           applyTerminalState(
             'RECONCILIATION',
@@ -428,136 +594,10 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // =============================================
-  // 4. NAVIGATION & SCROLL OBSERVERS
-  // =============================================
-  const navItems = $$('.nav-item');
-  const pages = $$('.page');
-
-  navItems.forEach(item => {
-    item.addEventListener('click', () => {
-      const target = document.getElementById(item.dataset.target);
-      if (target) {
-        target.scrollIntoView({ behavior: 'smooth' });
-      }
-    });
-  });
-
-  const navObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        const id = entry.target.id;
-        navItems.forEach(n => n.classList.remove('active'));
-        const active = document.querySelector(`.nav-item[data-target="${id}"]`);
-        if (active) active.classList.add('active');
-      }
-    });
-  }, { threshold: 0.25 });
-
-  pages.forEach(p => navObserver.observe(p));
-
-  const scrollObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add('visible');
-      }
-    });
-  }, { threshold: 0.12 });
-
-  $$('.animate-on-scroll').forEach(el => scrollObserver.observe(el));
-
-  const pageAnimObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-      if (entry.isIntersecting && !animatedPages.has(entry.target.id)) {
-        animatedPages.add(entry.target.id);
-        const pageId = entry.target.id;
-        if (pageId === 'page-2') animateTraditionalFlow();
-        if (pageId === 'page-3') animateFrameworkFlow();
-        if (pageId === 'page-5') startTokenRotation();
-        if (pageId === 'page-7') startEngine();
-        if (pageId === 'page-11') animateEvidenceMatrix();
-        if (pageId === 'page-13') animateDecisionTree();
-        if (pageId === 'page-15') animateMetrics();
-      }
-    });
-  }, { threshold: 0.2 });
-
-  pages.forEach(p => pageAnimObserver.observe(p));
-
-  // =============================================
-  // 5. PAYMENT DEMO (PAGE 1)
-  // =============================================
-  const payBtn = $('#pay-btn');
-  if (payBtn) {
-    payBtn.addEventListener('click', async () => {
-      payBtn.disabled = true;
-      payBtn.textContent = '⏳ Processing UPI Transfer...';
-
-      logUserAction(currentTxnId, 'Initiated checkout payment of ' + $('#display-amount').textContent);
-
-      const flowDiv = $('#payment-flow');
-      if (flowDiv) flowDiv.classList.remove('hidden');
-
-      const flowNodes = flowDiv.querySelectorAll('.flow-node');
-      const flowArrows = flowDiv.querySelectorAll('.flow-arrow');
-
-      for (let i = 0; i < flowNodes.length; i++) {
-        await sleep(500);
-        flowNodes[i].classList.add('active');
-        if (i < flowArrows.length) flowArrows[i].classList.add('active');
-      }
-
-      await sleep(600);
-      flowNodes[flowNodes.length - 1].classList.remove('active');
-      flowNodes[flowNodes.length - 1].classList.add('danger');
-
-      await sleep(400);
-      const statusDiv = $('#payment-status');
-      if (statusDiv) {
-        statusDiv.classList.remove('hidden');
-        statusDiv.style.animation = 'fadeInUp 0.4s ease';
-      }
-
-      payBtn.textContent = '🔴 Payment Failed (Monitoring Debit)';
-      payBtn.className = 'btn btn-danger btn-large btn-full';
-
-      if ($('#display-status-badge')) {
-        $('#display-status-badge').className = 'status-badge status-danger';
-        $('#display-status-badge').textContent = '🔴 Failed';
-      }
-
-      logUserAction(currentTxnId, '🔴 Payment Failed registered at gateway. Continuous evidence correlation engine activated.');
-      addEngineLog($('#engine-log'), getLiveTime(), `Payment failure registered for ${$('#display-txnid').textContent}. Correlation initiated.`, 'warning');
-    });
-  }
-
-  // =============================================
-  // 6. FLOW ANIMATIONS (PAGE 2 & 3)
-  // =============================================
-  async function animateTraditionalFlow() {
-    const nodes = $$('#traditional-flow .flow-node');
-    const arrows = $$('#traditional-flow .flow-arrow');
-    for (let i = 0; i < nodes.length; i++) {
-      await sleep(250);
-      nodes[i].classList.add('active');
-      if (i < arrows.length) arrows[i].classList.add('active');
-    }
-  }
-
-  async function animateFrameworkFlow() {
-    const nodes = $$('#framework-flow .flow-node');
-    const arrows = $$('#framework-flow .flow-arrow');
-    for (let i = 0; i < nodes.length; i++) {
-      await sleep(200);
-      nodes[i].classList.add('active');
-      if (i < arrows.length) arrows[i].classList.add('active');
-    }
-  }
-
-  // =============================================
-  // 7. TOKEN ROTATION (PAGE 5)
+  // 6. TOKEN ROTATION & ENGINE LOG LOOPS
   // =============================================
   function startTokenRotation() {
-    if (tokenInterval || !isTokenRotationActive) return;
+    if (tokenInterval) return;
 
     const tokenEl = $('#token-value');
     const countdownEl = $('#token-countdown');
@@ -566,14 +606,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (!tokenEl) return;
 
     countdownTimer = setInterval(() => {
-      if (!isTokenRotationActive) return;
+      const activeTxn = transactionDatabase.find(t => t.id === currentTxnId);
+      if (!activeTxn || activeTxn.status !== 'FAILED_MONITORING') return;
+
       countdownVal--;
       if (countdownVal <= 0) countdownVal = 4;
       if (countdownEl) countdownEl.textContent = countdownVal;
     }, 1000);
 
     tokenInterval = setInterval(() => {
-      if (!isTokenRotationActive) return;
+      const activeTxn = transactionDatabase.find(t => t.id === currentTxnId);
+      if (!activeTxn || activeTxn.status !== 'FAILED_MONITORING') return;
 
       const oldToken = tokenList[tokenIndex];
       tokenIndex = (tokenIndex + 1) % tokenList.length;
@@ -602,27 +645,75 @@ document.addEventListener('DOMContentLoaded', () => {
   const freezeTokenBtn = $('#freeze-token-btn');
   if (freezeTokenBtn) {
     freezeTokenBtn.addEventListener('click', () => {
-      if (isTokenRotationActive) {
-        isTokenRotationActive = false;
-        clearInterval(tokenInterval);
-        tokenInterval = null;
+      const activeTxn = transactionDatabase.find(t => t.id === currentTxnId);
+      if (!activeTxn) return;
+
+      if (activeTxn.status === 'FAILED_MONITORING') {
+        activeTxn.status = 'PAUSED';
+        refreshTabIndicators();
         freezeTokenBtn.textContent = '▶ Resume Rotation';
         freezeTokenBtn.className = 'btn btn-primary';
         if ($('#token-timer')) $('#token-timer').innerHTML = `<span class="text-yellow">⏸ Rotation Paused</span>`;
-        logUserAction(currentTxnId, 'Paused cryptographic evidence reference rotation.');
+        logUserAction(activeTxn.id, 'Paused cryptographic evidence reference rotation.');
       } else {
-        isTokenRotationActive = true;
-        startTokenRotation();
+        activeTxn.status = 'FAILED_MONITORING';
+        refreshTabIndicators();
         freezeTokenBtn.textContent = '⏸ Pause Rotation';
         freezeTokenBtn.className = 'btn btn-secondary';
         if ($('#token-timer')) $('#token-timer').innerHTML = `Next rotation cycle in: <span id="token-countdown">4</span>s`;
-        logUserAction(currentTxnId, 'Resumed cryptographic evidence reference rotation.');
+        logUserAction(activeTxn.id, 'Resumed cryptographic evidence reference rotation.');
       }
     });
   }
 
+  const engineSteps = [
+    { msg: '🔍 Polling bank settlement API for debit confirmation...', type: 'info' },
+    { msg: '⏳ Bank response pending. Maintaining event tracking cycle...', type: 'warning' },
+    { msg: '🔗 Cross-referencing UPI RRN against gateway logs...', type: 'info' },
+    { msg: '🛡️ Verifying cryptographic proof token validity...', type: 'info' },
+    { msg: '🔄 Check complete. Preserving active state in ledger.', type: 'info' }
+  ];
+  let engineStepIndex = 0;
+
+  function startEngine() {
+    if (engineInterval) return;
+    const logEl = $('#engine-log');
+    if (!logEl) return;
+
+    engineInterval = setInterval(() => {
+      const activeTxn = transactionDatabase.find(t => t.id === currentTxnId);
+      if (!activeTxn || activeTxn.status !== 'FAILED_MONITORING') return;
+
+      const step = engineSteps[engineStepIndex];
+      addEngineLog(logEl, getLiveTime(), step.msg, step.type);
+      engineStepIndex = (engineStepIndex + 1) % engineSteps.length;
+    }, 2800);
+  }
+
+  function addEngineLog(container, time, msg, status = 'info') {
+    if (!container) return;
+    const entry = document.createElement('div');
+    entry.className = 'engine-log-entry';
+
+    let color = '#38bdf8';
+    if (status === 'success') color = '#34d399';
+    if (status === 'danger') color = '#f87171';
+    if (status === 'warning') color = '#fbbf24';
+
+    entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-msg" style="color:${color}">${msg}</span>`;
+    container.appendChild(entry);
+    container.scrollTop = container.scrollHeight;
+  }
+
+  const clearLogBtn = $('#clear-engine-log-btn');
+  if (clearLogBtn) {
+    clearLogBtn.addEventListener('click', () => {
+      if ($('#engine-log')) $('#engine-log').innerHTML = '';
+    });
+  }
+
   // =============================================
-  // 8. PACKET TRANSIT & TAMPER AUDIT (PAGE 6)
+  // 7. PACKET TRANSIT & TAMPER AUDIT (PAGE 6)
   // =============================================
   const transmitPacketBtn = $('#transmit-packet-btn');
   const resetPacketBtn = $('#reset-packet-btn');
@@ -661,54 +752,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   // =============================================
-  // 9. CONTINUOUS ENGINE LOGS (PAGE 7)
-  // =============================================
-  const engineSteps = [
-    { msg: '🔍 Polling bank settlement API for debit confirmation...', type: 'info' },
-    { msg: '⏳ Bank response pending. Maintaining event tracking cycle...', type: 'warning' },
-    { msg: '🔗 Cross-referencing UPI RRN against gateway logs...', type: 'info' },
-    { msg: '🛡️ Verifying cryptographic proof token validity...', type: 'info' },
-    { msg: '🔄 Check complete. Preserving active state in ledger.', type: 'info' }
-  ];
-  let engineStepIndex = 0;
-
-  function startEngine() {
-    if (engineInterval || !isEngineRunning) return;
-    const logEl = $('#engine-log');
-    if (!logEl) return;
-
-    engineInterval = setInterval(() => {
-      if (!isEngineRunning) return;
-      const step = engineSteps[engineStepIndex];
-      addEngineLog(logEl, getLiveTime(), step.msg, step.type);
-      engineStepIndex = (engineStepIndex + 1) % engineSteps.length;
-    }, 2800);
-  }
-
-  function addEngineLog(container, time, msg, status = 'info') {
-    if (!container) return;
-    const entry = document.createElement('div');
-    entry.className = 'engine-log-entry';
-
-    let color = '#38bdf8';
-    if (status === 'success') color = '#34d399';
-    if (status === 'danger') color = '#f87171';
-    if (status === 'warning') color = '#fbbf24';
-
-    entry.innerHTML = `<span class="log-time">[${time}]</span><span class="log-msg" style="color:${color}">${msg}</span>`;
-    container.appendChild(entry);
-    container.scrollTop = container.scrollHeight;
-  }
-
-  const clearLogBtn = $('#clear-engine-log-btn');
-  if (clearLogBtn) {
-    clearLogBtn.addEventListener('click', () => {
-      if ($('#engine-log')) $('#engine-log').innerHTML = '';
-    });
-  }
-
-  // =============================================
-  // 10. CASE STUDY TRIGGERS (PAGE 8, 9, 10)
+  // 8. SCENARIO TRIGGERS (PAGES 8, 9, 10, 16)
   // =============================================
   const runCase1Btn = $('#run-case1-btn');
   if (runCase1Btn) {
@@ -791,81 +835,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // =============================================
-  // 11. EVIDENCE MATRIX (PAGE 11)
-  // =============================================
-  async function animateEvidenceMatrix() {
-    const statuses = $$('#evidence-matrix .evidence-status');
-    const labels = ['✓ MATCH', '✓ MATCH', '✓ MATCH', '✓ VALID', '✓ RECEIVED', '✓ RECEIVED', '✓ MATCH', '✓ VERIFIED', '✓ PASSED'];
-
-    for (let i = 0; i < statuses.length; i++) {
-      await sleep(200);
-      statuses[i].textContent = labels[i];
-      statuses[i].classList.add('match');
-      const row = statuses[i].closest('tr');
-      if (row) row.style.background = '#f0fdf4';
-    }
-
-    await sleep(300);
-    if ($('#evidence-decision')) $('#evidence-decision').style.opacity = '1';
-  }
-
-  // =============================================
-  // 12. EVENT CHAIN TAMPER (PAGE 12)
-  // =============================================
-  const chainTamperBtn = $('#chain-tamper-btn');
-  if (chainTamperBtn) {
-    chainTamperBtn.addEventListener('click', () => {
-      const amountEl = $('#chain-amount-3');
-      if (amountEl) {
-        amountEl.innerHTML = '<span class="tampered-text">Amount: ₹1,499</span> → <span class="tampered-new">₹2,499</span>';
-      }
-      const block3 = $('#chain-event-3');
-      if (block3) block3.classList.add('tampered');
-
-      const link3 = $('#chain-link-3');
-      const link4 = $('#chain-link-4');
-      if (link3) link3.classList.add('broken');
-      if (link4) link4.classList.add('broken');
-
-      const result = $('#chain-tamper-result');
-      if (result) {
-        result.classList.remove('hidden');
-        result.style.animation = 'fadeInUp 0.3s ease';
-      }
-      chainTamperBtn.disabled = true;
-      chainTamperBtn.textContent = '⚠️ Tampering Detected';
-      logUserAction(currentTxnId, 'Simulated chain tampering on Block 3: Hash link broken.');
-    });
-  }
-
-  // =============================================
-  // 13. DECISION TREE (PAGE 13)
-  // =============================================
-  async function animateDecisionTree() {
-    const nodes = $$('#decision-tree .decision-node');
-    for (let i = 0; i < nodes.length; i++) {
-      await sleep(300);
-      nodes[i].classList.add('highlight');
-      await sleep(150);
-      if (i < nodes.length - 1) nodes[i].classList.add('yes');
-    }
-  }
-
-  // =============================================
-  // 14. METRICS ANIMATION (PAGE 15)
-  // =============================================
-  async function animateMetrics() {
-    await sleep(200);
-    const fills = $$('#metrics-dashboard .metric-bar-fill');
-    fills.forEach(fill => {
-      fill.style.width = (fill.dataset.fill || 0) + '%';
-    });
-  }
-
-  // =============================================
-  // 15. LIVE SIMULATION (PAGE 16)
-  // =============================================
   const simBtn = $('#run-simulation-btn');
   const resetSimBtn = $('#reset-simulation-btn');
 
@@ -968,7 +937,38 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   }
 
-  // Initial load
-  refreshTabIndicators();
+  // =============================================
+  // 9. SCROLL & NAVIGATION
+  // =============================================
+  const navItems = $$('.nav-item');
+  const pages = $$('.page');
+
+  navItems.forEach(item => {
+    item.addEventListener('click', () => {
+      const target = document.getElementById(item.dataset.target);
+      if (target) target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+  const navObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        const id = entry.target.id;
+        navItems.forEach(n => n.classList.remove('active'));
+        const active = document.querySelector(`.nav-item[data-target="${id}"]`);
+        if (active) active.classList.add('active');
+      }
+    });
+  }, { threshold: 0.25 });
+  pages.forEach(p => navObserver.observe(p));
+
+  const scrollObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) entry.target.classList.add('visible');
+    });
+  }, { threshold: 0.12 });
+  $$('.animate-on-scroll').forEach(el => scrollObserver.observe(el));
+
+  // Initialize with TXN-01 in IDLE state (no lights blinking)
   switchActiveTransaction(1);
 });
