@@ -1,7 +1,7 @@
 # 🛡️ Cryptographic Transaction Evidence & Refund Acceleration Framework
 
 [![Live Demo](https://img.shields.io/badge/Live%20Demo-Vercel%20Production-059669?style=for-the-badge&logo=vercel)](https://payment-recovery-eight.vercel.app/)
-[![GitHub Repository](https://img.shields.io/badge/GitHub-Payment__Recovery-2563eb?style=for-the-badge&logo=github)](https://github.com/ragunandhan5007/Payment_Recovery)
+[![GitHub Repository](https://img.shields.io/badge/GitHub-Framework%20Repo-2563eb?style=for-the-badge&logo=github)](https://github.com/ragunandhan5007/Cryptographic_Transaction_Evidence_Refund_Acceleration_Framework)
 [![License](https://img.shields.io/badge/License-MIT-475569?style=for-the-badge)](LICENSE)
 
 An enterprise-grade, interactive **Cryptographic Transaction Evidence & Refund Acceleration Framework** designed to solve systemic delays in failed digital payment reversals. This prototype demonstrates how real-time event streaming, asymmetric cryptographic proofs, continuous transaction state machines, and deterministic multi-source correlation can reduce traditional **3–7 business day batch reconciliation delays down to sub-15-second verifiable settlement**.
@@ -11,7 +11,7 @@ An enterprise-grade, interactive **Cryptographic Transaction Evidence & Refund A
 ## 🌐 Live Production Deployment
 
 🔗 **Live Application URL:** **[https://payment-recovery-eight.vercel.app/](https://payment-recovery-eight.vercel.app/)**  
-📂 **Source Code Repository:** **[https://github.com/ragunandhan5007/Payment_Recovery](https://github.com/ragunandhan5007/Payment_Recovery)**
+📂 **Source Code Repository:** **[https://github.com/ragunandhan5007/Cryptographic_Transaction_Evidence_Refund_Acceleration_Framework](https://github.com/ragunandhan5007/Cryptographic_Transaction_Evidence_Refund_Acceleration_Framework)**
 
 ---
 
@@ -154,8 +154,8 @@ No build tooling, bundlers, or Node runtimes required. The project is completely
 
 ### 1. Clone Repository
 ```bash
-git clone https://github.com/ragunandhan5007/Payment_Recovery.git
-cd Payment_Recovery
+git clone https://github.com/ragunandhan5007/Cryptographic_Transaction_Evidence_Refund_Acceleration_Framework.git
+cd Cryptographic_Transaction_Evidence_Refund_Acceleration_Framework
 ```
 
 ### 2. Launch Local Server
