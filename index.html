@@ -351,43 +351,58 @@
     </div>
 
     <!-- Controlled Network Transit -->
+    <!-- Controlled Network Transit with Fixed Centered Track -->
     <div class="card animate-on-scroll mb-20" id="packet-visual">
       <div class="card-header justify-between">
-        <div class="flex items-center gap-8"><span class="card-icon">📡</span> Network Transit: Gateway ➔ Bank</div>
+        <div class="flex items-center gap-8"><span class="card-icon">📡</span> Network Transit: Gateway ➔ Bank Verification</div>
         <div class="flex gap-8">
-          <button class="btn btn-secondary" id="transmit-packet-btn" style="padding:4px 12px;font-size:11.5px;">▶ Transmit Evidence</button>
+          <button class="btn btn-primary" id="transmit-packet-btn" style="padding:4px 12px;font-size:11.5px;">▶ Transmit Evidence</button>
           <button class="btn btn-secondary" id="reset-packet-btn" style="padding:4px 12px;font-size:11.5px;">↺ Reset</button>
         </div>
       </div>
       
       <div class="packet-container">
-        <div class="flow-node flow-node-small"><span class="node-icon">📱</span><span class="node-label">Sender</span></div>
-        <div style="width:50px;height:2px;background:#cbd5e1;"></div>
-        <div class="flow-node flow-node-small" id="node-gateway"><span class="node-icon">🌐</span><span class="node-label">Payment Gateway</span></div>
-        <div class="packet-path-gw-bank"></div>
+        <!-- Background full line -->
+        <div class="packet-full-track"></div>
+        <!-- Active evidence line between Gateway and Bank -->
+        <div class="packet-gw-bank-track"></div>
+        <!-- Animated Evidence Packet Dot -->
         <div class="packet-dot animating-gw-bank" id="packet-transit-dot"></div>
-        <div class="flow-node flow-node-small" id="node-bank"><span class="node-icon">🏦</span><span class="node-label">Bank</span></div>
+
+        <div class="flow-node flow-node-small" style="z-index:5;"><span class="node-icon">📱</span><span class="node-label">Sender</span></div>
+        <div class="flow-node flow-node-small" id="node-gateway" style="z-index:5;border-color:var(--accent-blue);"><span class="node-icon">🌐</span><span class="node-label">Payment Gateway</span></div>
+        <div class="flow-node flow-node-small" id="node-bank" style="z-index:5;border-color:var(--success);"><span class="node-icon">🏦</span><span class="node-label">Bank Network</span></div>
       </div>
-      <div class="text-secondary mt-8 text-center" style="font-size:11.5px">
-        <em>Note: Active verification evidence specifically travels between Payment Gateway and Authoritative Bank Network.</em>
+      <div class="text-secondary mt-12 text-center" style="font-size:12px">
+        <em>Note: Authoritative verification evidence strictly transits between the Payment Gateway and the Bank core settlement network.</em>
       </div>
     </div>
 
     <div class="card animate-on-scroll">
-      <div class="card-header"><span class="card-icon">🚨</span> Tamper Detection Simulation</div>
-      <p class="text-secondary mb-16">Test modifying payload amount from ₹1,499 to ₹1,999:</p>
-      <button class="btn btn-danger" id="tamper-btn">⚠️ Inject Malicious Modification</button>
+      <div class="card-header"><span class="card-icon">🚨</span> Cryptographic Tamper Detection & Security Audit</div>
+      <p class="text-secondary mb-16">Simulate a malicious actor attempting to modify transaction parameters in transit (e.g. ₹1,499 → ₹1,999):</p>
+      <button class="btn btn-danger" id="tamper-btn">⚠️ Inject Malicious Modification (Tamper Test)</button>
+      
       <div id="tamper-result" class="hidden mt-20">
         <div class="danger-box">
           <div class="flex items-center gap-16 mb-12">
-            <span>Original: <span class="tampered-text mono">₹1,499</span></span>
+            <span>Original Payload: <span class="tampered-text mono">₹1,499</span></span>
             <span class="comparison-arrow">→</span>
-            <span>Altered: <span class="tampered-new mono">₹1,999</span></span>
+            <span>Altered Payload: <span class="tampered-new mono">₹1,999</span></span>
           </div>
           <div class="flex items-center gap-12 mb-12">
             <span class="status-badge status-danger status-badge-lg">🔴 CRYPTOGRAPHIC VERIFICATION FAILED</span>
           </div>
-          <p class="font-bold text-red">Transaction evidence rejected. Automatic refund is immediately halted.</p>
+          
+          <div style="background:#ffffff;padding:14px;border-radius:6px;border:1px solid #fecaca;margin-top:10px;">
+            <div style="font-weight:700;color:#991b1b;margin-bottom:6px;font-size:13px;">🔍 Technical Reason & Security Breakdown:</div>
+            <ul class="detail-list" style="font-size:12.5px;">
+              <li><span class="dl-label">Root Cause:</span><span class="dl-value text-red">Hash Digest Inconsistency — SHA-256(payload) mismatch</span></li>
+              <li><span class="dl-label">Corrupted Field:</span><span class="dl-value mono text-red">amount: 1499.00 -> 1999.00</span></li>
+              <li><span class="dl-label">Signature Verification:</span><span class="dl-value text-red">RSA-PSS-2048 Public Key Verification Failed</span></li>
+              <li><span class="dl-label">Framework Action:</span><span class="dl-value text-green">Auto-refund blocked; Payload flagged & forwarded to Fraud Exception Audit</span></li>
+            </ul>
+          </div>
         </div>
       </div>
     </div>
@@ -398,9 +413,17 @@
   <!-- ================================================================ -->
   <section class="page" id="page-7">
     <div class="page-header animate-on-scroll">
-      <div class="page-badge">PAGE 07 — CONTINUOUS MONITORING</div>
+      <div class="page-badge">PAGE 07 — CONTINUOUS MONITORING & USER ACTIONS</div>
       <h2 class="page-title">Continuous Transaction Engine</h2>
-      <p class="page-subtitle">Persistent monitoring until a verified terminal state is reached</p>
+      <p class="page-subtitle">Persistent monitoring until a verified terminal state is reached — click any terminal action below</p>
+    </div>
+
+    <!-- 120s Auto-Reconciliation Warning (hidden by default, shows after 120s if not stopped) -->
+    <div id="timeout-reconciliation-alert" class="custom-alert-banner hidden">
+      <div>
+        <strong>⚠️ 120-Second Monitoring Timeout Reached:</strong> No authoritative bank confirmation received within standard window. Transaction automatically transferred to <strong>Reconciliation & Exception Queue</strong>.
+      </div>
+      <button class="btn btn-warning" id="dismiss-timeout-alert-btn" style="padding:4px 10px;font-size:11px;">Acknowledge</button>
     </div>
 
     <div class="grid-2">
@@ -408,7 +431,7 @@
         <div class="engine-monitor animate-on-scroll" id="engine-status">
           <div class="card-header justify-between">
             <div class="flex items-center gap-8"><span class="card-icon">⚙️</span> Engine State Monitor</div>
-            <span class="status-badge status-success" id="engine-indicator-badge">🟢 RUNNING</span>
+            <span class="status-badge status-danger" id="engine-indicator-badge">🔴 ACTIVE (UNSTOPPED)</span>
           </div>
           <div class="engine-row">
             <span class="label">Transaction</span>
@@ -427,23 +450,39 @@
             <span class="label">Active Uptime</span>
             <span class="mono text-cyan" id="engine-uptime">00:00:14</span>
           </div>
-          <div class="mt-16 flex gap-8">
-            <button class="btn btn-success btn-full" id="engine-stop-refunded-btn">Mark Refund Received (Stop Engine)</button>
-          </div>
         </div>
 
+        <!-- 4 REAL WORKING TERMINAL STATE BUTTONS WITH ACTIONS & REASONS -->
         <div class="card animate-on-scroll">
-          <div class="card-header"><span class="card-icon">🏁</span> Terminal States (Monitoring Halts)</div>
-          <div class="terminal-states">
-            <div class="terminal-state" style="background:var(--success-bg);color:var(--success);border-color:var(--success-border)">✅ REFUNDED</div>
-            <div class="terminal-state" style="background:var(--success-bg);color:var(--success);border-color:var(--success-border)">✅ REVERSED</div>
-            <div class="terminal-state" style="background:var(--warning-bg);color:var(--warning);border-color:var(--warning-border)">⚠️ RECONCILIATION</div>
-            <div class="terminal-state" style="background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border)">🔴 INVALID / TAMPERED</div>
+          <div class="card-header justify-between">
+            <div class="flex items-center gap-8"><span class="card-icon">🏁</span> Assign Terminal State (Manual Decision)</div>
+          </div>
+          <div class="terminal-states-interactive">
+            <button class="terminal-action-btn btn-term-refunded" id="btn-action-refund">
+              <span>✅ REFUNDED</span>
+              <span class="sub-text">Debit Confirmed ➔ Auto-Refund</span>
+            </button>
+            <button class="terminal-action-btn btn-term-reversed" id="btn-action-reverse">
+              <span>✅ REVERSED</span>
+              <span class="sub-text">Bank Switch Rollback</span>
+            </button>
+            <button class="terminal-action-btn btn-term-reconciliation" id="btn-action-reconcile">
+              <span>⚠️ RECONCILIATION</span>
+              <span class="sub-text">Missing Debit / >120s Timeout</span>
+            </button>
+            <button class="terminal-action-btn btn-term-tampered" id="btn-action-tamper">
+              <span>🔴 INVALID / TAMPERED</span>
+              <span class="sub-text">Hash Corrupted ➔ Block</span>
+            </button>
+          </div>
+          <div class="text-secondary mt-12" style="font-size:11.5px;">
+            <em>Clicking any terminal state halts all polling cycles, freezes cryptographic tokens, and locks the transaction ledger.</em>
           </div>
         </div>
       </div>
 
       <div class="flex flex-col gap-20">
+        <!-- Live Engine Log -->
         <div class="card animate-on-scroll">
           <div class="card-header justify-between">
             <div class="flex items-center gap-8"><span class="card-icon">📋</span> Live Verification Cycles</div>
@@ -452,8 +491,17 @@
           <div class="engine-log" id="engine-log"></div>
         </div>
 
-        <div class="highlight-box animate-on-scroll">
-          <strong>“Monitoring continues until the transaction reaches a terminal state.”</strong>
+        <!-- Dedicated User Action Dynamic Timeline for Active Transaction -->
+        <div class="user-action-timeline-box animate-on-scroll">
+          <div class="card-header justify-between" style="margin-bottom:10px;">
+            <div class="flex items-center gap-8"><span class="card-icon">🕒</span> User Action Dynamic Timeline (<span id="user-action-txnid" class="mono">TXN-01</span>)</div>
+          </div>
+          <div id="user-action-timeline-list" style="max-height:180px;overflow-y:auto;">
+            <div class="action-log-entry">
+              <span class="action-log-time" id="action-init-time">10:00:00</span>
+              <span class="action-log-text">Transaction initialized by user. Standing by for execution.</span>
+            </div>
+          </div>
         </div>
       </div>
     </div>
