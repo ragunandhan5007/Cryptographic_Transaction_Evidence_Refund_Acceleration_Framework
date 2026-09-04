@@ -6,30 +6,48 @@
   <title>Cryptographic Transaction Evidence & Refund Acceleration Framework</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
+  <!-- ========== TOP TRANSACTION CONTROLLER BAR (MAX 5 TRANSACTIONS) ========== -->
+  <header class="txn-controller-bar">
+    <div class="txn-tabs-wrap">
+      <span style="font-size:11px;font-weight:700;text-transform:uppercase;color:var(--text-secondary);margin-right:4px;">Transactions:</span>
+      <button class="txn-tab-btn active" data-txnid="1"><span class="badge-dot"></span>TXN-01 (#7842)</button>
+      <button class="txn-tab-btn" data-txnid="2"><span class="badge-dot"></span>TXN-02 (#7843)</button>
+      <button class="txn-tab-btn" data-txnid="3"><span class="badge-dot"></span>TXN-03 (#7844)</button>
+      <button class="txn-tab-btn" data-txnid="4"><span class="badge-dot"></span>TXN-04 (#7845)</button>
+      <button class="txn-tab-btn" data-txnid="5"><span class="badge-dot"></span>TXN-05 (#7846)</button>
+    </div>
+    
+    <div class="txn-controls-group">
+      <button class="btn btn-primary" id="global-start-btn" style="padding:6px 14px;font-size:12px;">▶ Start Txn</button>
+      <button class="btn btn-secondary" id="global-pause-btn" style="padding:6px 14px;font-size:12px;">⏸ Pause</button>
+      <button class="btn btn-success" id="global-refund-received-btn" style="padding:6px 14px;font-size:12px;">✅ Payment Received / Stop Engine</button>
+    </div>
+  </header>
+
   <!-- ========== NAVIGATION SIDEBAR ========== -->
   <nav class="nav-sidebar" id="nav-sidebar">
     <div class="nav-logo">CF</div>
-    <div class="nav-item active" data-target="page-1" data-tooltip="Payment Failure">01</div>
-    <div class="nav-item" data-target="page-2" data-tooltip="Traditional System">02</div>
-    <div class="nav-item" data-target="page-3" data-tooltip="Proposed Framework">03</div>
-    <div class="nav-item" data-target="page-4" data-tooltip="Crypto Token">04</div>
-    <div class="nav-item" data-target="page-5" data-tooltip="Rotating Token">05</div>
-    <div class="nav-item" data-target="page-6" data-tooltip="Packet Visual">06</div>
-    <div class="nav-item" data-target="page-7" data-tooltip="Engine Monitor">07</div>
-    <div class="nav-item" data-target="page-8" data-tooltip="Case 1: Success">08</div>
-    <div class="nav-item" data-target="page-9" data-tooltip="Case 2: Delayed">09</div>
-    <div class="nav-item" data-target="page-10" data-tooltip="Case 3: Missing">10</div>
-    <div class="nav-item" data-target="page-11" data-tooltip="Evidence Engine">11</div>
-    <div class="nav-item" data-target="page-12" data-tooltip="Immutable History">12</div>
-    <div class="nav-item" data-target="page-13" data-tooltip="Decision Engine">13</div>
-    <div class="nav-item" data-target="page-14" data-tooltip="Comparison">14</div>
-    <div class="nav-item" data-target="page-15" data-tooltip="Results">15</div>
-    <div class="nav-item" data-target="page-16" data-tooltip="Live Simulation">16</div>
+    <div class="nav-item active" data-target="page-1" data-tooltip="01. Payment Failure">01</div>
+    <div class="nav-item" data-target="page-2" data-tooltip="02. Traditional System">02</div>
+    <div class="nav-item" data-target="page-3" data-tooltip="03. Proposed Framework">03</div>
+    <div class="nav-item" data-target="page-4" data-tooltip="04. Crypto Token">04</div>
+    <div class="nav-item" data-target="page-5" data-tooltip="05. Rotating Token">05</div>
+    <div class="nav-item" data-target="page-6" data-tooltip="06. Packet Visual">06</div>
+    <div class="nav-item" data-target="page-7" data-tooltip="07. Engine Monitor">07</div>
+    <div class="nav-item" data-target="page-8" data-tooltip="08. Case 1: Success">08</div>
+    <div class="nav-item" data-target="page-9" data-tooltip="09. Case 2: Delayed">09</div>
+    <div class="nav-item" data-target="page-10" data-tooltip="10. Case 3: Missing">10</div>
+    <div class="nav-item" data-target="page-11" data-tooltip="11. Evidence Engine">11</div>
+    <div class="nav-item" data-target="page-12" data-tooltip="12. Immutable History">12</div>
+    <div class="nav-item" data-target="page-13" data-tooltip="13. Decision Engine">13</div>
+    <div class="nav-item" data-target="page-14" data-tooltip="14. Comparison">14</div>
+    <div class="nav-item" data-target="page-15" data-tooltip="15. Results Dashboard">15</div>
+    <div class="nav-item" data-target="page-16" data-tooltip="16. Live Simulation">16</div>
   </nav>
 
   <!-- ================================================================ -->
@@ -39,21 +57,22 @@
     <div class="page-header animate-on-scroll">
       <div class="page-badge">PAGE 01 — PAYMENT INITIATION</div>
       <h2 class="page-title">Payment Transaction</h2>
-      <p class="page-subtitle">Simulated E-Commerce Payment Flow</p>
+      <p class="page-subtitle">Simulated digital checkout flow with active debit verification monitoring</p>
     </div>
 
     <div class="grid-2">
       <div class="card animate-on-scroll">
-        <div class="card-header"><span class="card-icon">💳</span> Order Details</div>
+        <div class="card-header"><span class="card-icon">💳</span> Active Order Details</div>
         <ul class="detail-list">
-          <li><span class="dl-label">Order ID</span><span class="dl-value">ORD-20260904-7842</span></li>
-          <li><span class="dl-label">Amount</span><span class="dl-value text-cyan amount-lg">₹1,499</span></li>
-          <li><span class="dl-label">Payment Method</span><span class="dl-value">UPI</span></li>
-          <li><span class="dl-label">Time</span><span class="dl-value">10:00:00 AM</span></li>
-          <li><span class="dl-label">Status</span><span class="dl-value"><span class="status-badge status-pending">⏳ Ready</span></span></li>
+          <li><span class="dl-label">Transaction ID</span><span class="dl-value" id="display-txnid">TXN784529101</span></li>
+          <li><span class="dl-label">Order ID</span><span class="dl-value" id="display-orderid">ORD-20260904-7842</span></li>
+          <li><span class="dl-label">Amount</span><span class="dl-value text-cyan amount-lg" id="display-amount">₹1,499</span></li>
+          <li><span class="dl-label">Payment Method</span><span class="dl-value">UPI (Unified Payments Interface)</span></li>
+          <li><span class="dl-label">Initiation Time</span><span class="dl-value mono" id="display-init-time">10:00:00 AM</span></li>
+          <li><span class="dl-label">Current State</span><span class="dl-value"><span class="status-badge status-pending" id="display-status-badge">⏳ Ready</span></span></li>
         </ul>
-        <div class="mt-20">
-          <button class="btn btn-primary btn-large btn-full" id="pay-btn">🔐 PAY ₹1,499</button>
+        <div class="mt-20 flex gap-12">
+          <button class="btn btn-primary btn-large btn-full" id="pay-btn">🔐 PAY <span id="pay-btn-amount">₹1,499</span></button>
         </div>
       </div>
 
@@ -83,7 +102,7 @@
                 <span class="status-badge status-warning status-badge-lg">🟡 Debit Status: Awaiting Confirmation</span>
               </div>
               <div class="highlight-box">
-                <strong>⚠️ Payment failed.</strong> We are checking whether your bank account was debited. Please do not retry the payment immediately.
+                <strong>⚠️ Payment failed.</strong> We are checking whether your bank account was debited. The continuous evidence framework is actively correlating records.
               </div>
             </div>
           </div>
@@ -99,7 +118,7 @@
     <div class="page-header animate-on-scroll">
       <div class="page-badge">PAGE 02 — EXISTING PROCESS</div>
       <h2 class="page-title">Traditional Refund Process</h2>
-      <p class="page-subtitle">Current industry-standard workflow for failed payment refunds</p>
+      <p class="page-subtitle">Current industry-standard workflow showing avoidable batch reconciliation bottlenecks</p>
     </div>
 
     <div class="grid-2">
@@ -124,21 +143,22 @@
 
       <div class="flex flex-col gap-20">
         <div class="card card-glow animate-on-scroll text-center">
-          <div class="text-muted mb-8" style="font-size:12px;text-transform:uppercase;letter-spacing:2px">Typical Processing Window</div>
-          <div class="text-red mono text-3xl font-extra glow-text">3–7 Business Days</div>
+          <div class="text-muted mb-8" style="font-size:12px;text-transform:uppercase;letter-spacing:1px;font-weight:700">Typical Processing Window</div>
+          <div class="text-red mono text-3xl" style="font-weight:800">3–7 Business Days</div>
+          <div class="text-secondary mt-8" style="font-size:13px">Multiple offline reconciliation checkpoints delay customer reimbursement</div>
         </div>
 
         <div class="warning-box animate-on-scroll">
-          <strong>⚠️ Problem:</strong> The system may wait for batch reconciliation even when useful transaction evidence is already available. This results in avoidable delays for the customer.
+          <strong>⚠️ Problem:</strong> The system may wait for batch reconciliation even when useful transaction evidence is already available.
         </div>
 
         <div class="card animate-on-scroll">
-          <div class="card-header"><span class="card-icon">🔴</span> Key Bottlenecks</div>
+          <div class="card-header"><span class="card-icon">🔴</span> Key Identified Bottlenecks</div>
           <ul class="detail-list">
-            <li><span class="dl-label">Batch Processing</span><span class="dl-value text-red">24-48 hrs</span></li>
-            <li><span class="dl-label">Manual Verification</span><span class="dl-value text-red">1-2 days</span></li>
-            <li><span class="dl-label">Bank Settlement</span><span class="dl-value text-red">2-5 days</span></li>
-            <li><span class="dl-label">No Real-Time Tracking</span><span class="dl-value text-red">Opaque</span></li>
+            <li><span class="dl-label">Batch Settlement</span><span class="dl-value text-red">24–48 hrs delay</span></li>
+            <li><span class="dl-label">Offline File Exchanges</span><span class="dl-value text-red">Daily T+1 / T+2 files</span></li>
+            <li><span class="dl-label">Manual Exception Queues</span><span class="dl-value text-red">1–3 days backlogged</span></li>
+            <li><span class="dl-label">Fragmented Verification</span><span class="dl-value text-red">No unified evidence trail</span></li>
           </ul>
         </div>
       </div>
@@ -157,7 +177,7 @@
 
     <div class="grid-2">
       <div class="card animate-on-scroll">
-        <div class="card-header"><span class="card-icon">🏗️</span> Architecture Pipeline</div>
+        <div class="card-header"><span class="card-icon">🏗️</span> Pipeline Architecture</div>
         <div class="flow-container" id="framework-flow">
           <div class="flow-node"><span class="node-icon">👤</span><span class="node-label">User</span></div>
           <div class="flow-arrow"></div>
@@ -175,7 +195,7 @@
           <div class="flow-arrow"></div>
           <div class="flow-node"><span class="node-icon">🧠</span><span class="node-label">Refund Decision Engine</span></div>
           <div class="flow-arrow"></div>
-          <div class="flow-node"><span class="node-icon">💰</span><span class="node-label">Refund / Reversal / Reconciliation</span></div>
+          <div class="flow-node success"><span class="node-icon">💰</span><span class="node-label">Refund / Reversal / Reconciliation</span></div>
         </div>
       </div>
 
@@ -183,20 +203,20 @@
         <div class="card-header"><span class="card-icon">📒</span> Transaction Evidence Ledger</div>
         <table class="evidence-table">
           <thead><tr><th>Field</th><th>Value</th></tr></thead>
-          <tbody>
-            <tr><td>Transaction ID</td><td class="mono">TXN784529103</td></tr>
-            <tr><td>Order ID</td><td class="mono">ORD-20260904-7842</td></tr>
-            <tr><td>Amount</td><td class="mono text-cyan">₹1,499</td></tr>
-            <tr><td>Event Type</td><td class="mono">PAYMENT_INITIATED</td></tr>
+          <tbody id="ledger-body">
+            <tr><td>Transaction ID</td><td class="mono" id="ledger-txnid">TXN784529101</td></tr>
+            <tr><td>Order ID</td><td class="mono" id="ledger-orderid">ORD-20260904-7842</td></tr>
+            <tr><td>Amount</td><td class="mono text-cyan" id="ledger-amount">₹1,499</td></tr>
+            <tr><td>Event Type</td><td class="mono" id="ledger-event">PAYMENT_INITIATED</td></tr>
             <tr><td>Source</td><td class="mono">UPI_GATEWAY</td></tr>
-            <tr><td>Timestamp</td><td class="mono">10:00:00.000</td></tr>
-            <tr><td>UPI Reference</td><td class="mono text-muted">— awaiting —</td></tr>
-            <tr><td>Gateway Response</td><td class="mono text-yellow">TIMEOUT</td></tr>
-            <tr><td>Bank Response</td><td class="mono text-yellow">PENDING</td></tr>
-            <tr><td>Crypto Token</td><td class="mono text-cyan">A7F3-19BC-42D8</td></tr>
-            <tr><td>Prev Hash</td><td class="mono text-muted">GENESIS</td></tr>
-            <tr><td>State</td><td><span class="status-badge status-pending">PROCESSING</span></td></tr>
-            <tr><td>Verification</td><td><span class="status-badge status-warning">PENDING</span></td></tr>
+            <tr><td>Timestamp</td><td class="mono" id="ledger-time">10:00:00.000</td></tr>
+            <tr><td>UPI Reference / RRN</td><td class="mono text-muted" id="ledger-rrn">— awaiting —</td></tr>
+            <tr><td>Gateway Response</td><td class="mono text-yellow" id="ledger-gw">TIMEOUT</td></tr>
+            <tr><td>Bank Response</td><td class="mono text-yellow" id="ledger-bank">PENDING</td></tr>
+            <tr><td>Cryptographic Token</td><td class="mono text-cyan" id="ledger-token">A7F3-19BC-42D8</td></tr>
+            <tr><td>Previous Hash</td><td class="mono text-muted" id="ledger-prevhash">GENESIS_0000</td></tr>
+            <tr><td>Current State</td><td><span class="status-badge status-pending" id="ledger-state">PROCESSING</span></td></tr>
+            <tr><td>Verification Result</td><td><span class="status-badge status-warning" id="ledger-verification">PENDING</span></td></tr>
           </tbody>
         </table>
       </div>
@@ -210,23 +230,23 @@
     <div class="page-header animate-on-scroll">
       <div class="page-badge">PAGE 04 — CRYPTOGRAPHIC MECHANISM</div>
       <h2 class="page-title">Cryptographic Transaction Token</h2>
-      <p class="page-subtitle">How transaction evidence is cryptographically secured and verified</p>
+      <p class="page-subtitle">Transaction evidence is cryptographically bound and verifiable without revealing secrets</p>
     </div>
 
     <div class="card card-glow animate-on-scroll text-center mb-20">
-      <div class="text-muted mb-8" style="font-size:11px;text-transform:uppercase;letter-spacing:2px">Transaction Token at 10:00:00</div>
-      <div class="token-display">A7F3-19BC-42D8</div>
-      <div class="text-muted mt-8" style="font-size:12px">Partial reference only — complete secret key is never exposed</div>
+      <div class="text-muted mb-8" style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;font-weight:700">Active Transaction Evidence Reference</div>
+      <div class="token-display" id="crypto-token-display">A7F3-19BC-42D8</div>
+      <div class="text-secondary mt-8" style="font-size:12.5px">Partial public identifier only — private signing capabilities remain completely protected</div>
     </div>
 
     <div class="grid-2">
       <div class="card animate-on-scroll">
         <div class="card-header"><span class="card-icon">🔐</span> Sender Side</div>
-        <div class="text-lg font-bold mb-12">Secure Transaction Evidence Generated</div>
+        <div class="font-bold mb-12" style="font-size:15px">Secure Transaction Evidence Generated</div>
         <div class="flow-container">
           <div class="flow-node flow-node-small"><span class="node-icon">🔑</span><span class="node-label">Private Signing Key</span></div>
           <div class="flow-arrow"></div>
-          <div class="flow-node flow-node-small" style="border-color:var(--accent-purple)"><span class="node-icon">📄</span><span class="node-label">+ Transaction Data</span></div>
+          <div class="flow-node flow-node-small"><span class="node-icon">📄</span><span class="node-label">+ Transaction Data</span></div>
           <div class="flow-arrow"></div>
           <div class="flow-node flow-node-small success"><span class="node-icon">✍️</span><span class="node-label">Cryptographic Signature</span></div>
         </div>
@@ -234,34 +254,19 @@
 
       <div class="card animate-on-scroll">
         <div class="card-header"><span class="card-icon">🔓</span> Receiver Side</div>
-        <div class="text-lg font-bold mb-12">Matching Transaction Evidence Verified</div>
+        <div class="font-bold mb-12" style="font-size:15px">Matching Evidence Verified</div>
         <div class="flow-container">
           <div class="flow-node flow-node-small"><span class="node-icon">📩</span><span class="node-label">Received Signature</span></div>
           <div class="flow-arrow"></div>
-          <div class="flow-node flow-node-small" style="border-color:var(--accent-purple)"><span class="node-icon">🔑</span><span class="node-label">Public Verification Key</span></div>
+          <div class="flow-node flow-node-small"><span class="node-icon">🔑</span><span class="node-label">Public Verification Key</span></div>
           <div class="flow-arrow"></div>
-          <div class="flow-node flow-node-small success"><span class="node-icon">✅</span><span class="node-label">Authenticity Confirmed</span></div>
+          <div class="flow-node flow-node-small success"><span class="node-icon">✅</span><span class="node-label">Authenticity Verified</span></div>
         </div>
       </div>
     </div>
 
-    <div class="card animate-on-scroll mt-20">
-      <div class="card-header"><span class="card-icon">🌐</span> End-to-End Flow</div>
-      <div class="flow-horizontal" style="justify-content:center;gap:0">
-        <div class="flow-node"><span class="node-icon">🔐</span><span class="node-label">Sender</span></div>
-        <div class="flow-arrow-h"></div>
-        <div class="flow-node" style="border-color:var(--accent-purple)"><span class="node-icon">✍️</span><span class="node-label">Sign + Data</span></div>
-        <div class="flow-arrow-h"></div>
-        <div class="flow-node"><span class="node-icon">🌐</span><span class="node-label">Network</span></div>
-        <div class="flow-arrow-h"></div>
-        <div class="flow-node"><span class="node-icon">🔓</span><span class="node-label">Receiver</span></div>
-        <div class="flow-arrow-h"></div>
-        <div class="flow-node success"><span class="node-icon">✅</span><span class="node-label">Verify</span></div>
-      </div>
-    </div>
-
     <div class="highlight-box animate-on-scroll mt-20">
-      <strong>🔑 Key Principle:</strong> The receiver does not need to know or receive the sender's private secret. The system verifies authenticity using cryptographic verification — only the corresponding public key is needed.
+      <strong>🔑 Key Principle:</strong> The receiver does not need to know or receive the sender's private secret. The system verifies authenticity using cryptographic verification.
     </div>
   </section>
 
@@ -272,40 +277,35 @@
     <div class="page-header animate-on-scroll">
       <div class="page-badge">PAGE 05 — EVIDENCE ROTATION</div>
       <h2 class="page-title">Rotating Transaction Token / Evidence</h2>
-      <p class="page-subtitle">Continuous evidence reference cycling with immutable history preservation</p>
+      <p class="page-subtitle">Evidence references cycle periodically while historical integrity is permanently preserved</p>
     </div>
 
-    <div class="card card-glow animate-on-scroll text-center mb-20">
-      <div class="text-muted mb-8" style="font-size:11px;text-transform:uppercase;letter-spacing:2px">Current Transaction Evidence Reference</div>
+    <div class="token-display-box animate-on-scroll text-center mb-20">
+      <div class="text-muted mb-8" style="font-size:11px;text-transform:uppercase;letter-spacing:1.5px;font-weight:700">Current Transaction Evidence Reference</div>
       <div class="token-display" id="token-value">A7F3-19BC</div>
-      <div class="text-muted mt-12 mono" style="font-size:12px" id="token-timer">Next rotation in: <span id="token-countdown">4</span>s</div>
+      <div class="text-secondary mt-12 mono" style="font-size:12px" id="token-timer">Next rotation cycle in: <span id="token-countdown">4</span>s</div>
+      <div class="mt-12">
+        <button class="btn btn-secondary" id="freeze-token-btn" style="padding:6px 14px;font-size:12px;">⏸ Pause Rotation</button>
+      </div>
     </div>
 
     <div class="grid-2">
       <div class="card animate-on-scroll" id="token-history">
-        <div class="card-header"><span class="card-icon">📜</span> Previous References (Immutable History)</div>
+        <div class="card-header"><span class="card-icon">📜</span> Immutable Reference History</div>
         <div id="token-history-list">
-          <div class="text-muted text-center" style="padding:20px;font-size:13px">Rotation history will appear here...</div>
+          <div class="token-history-item"><span class="th-old">A7F3-19BC</span><span class="th-time">10:00:00</span></div>
+          <div class="token-history-item"><span class="th-old">E2C8-71FA</span><span class="th-time">10:05:00</span></div>
+          <div class="token-history-item"><span class="th-old">9D44-B6AC</span><span class="th-time">10:10:00</span></div>
         </div>
       </div>
 
-      <div class="flex flex-col gap-20">
+      <div class="flex flex-col gap-16">
         <div class="highlight-box animate-on-scroll">
-          <strong>ℹ️ Important:</strong> The displayed token is a transaction/evidence reference. Cryptographic integrity is maintained internally through authenticated records and signatures/hashes. This reference is NOT the secret key.
+          <strong>ℹ️ Important:</strong> The displayed token is a transaction/evidence reference. Cryptographic integrity is maintained internally through authenticated records and signatures/hashes.
         </div>
 
         <div class="quote-box animate-on-scroll">
-          "Previous references remain available in the immutable transaction history. No evidence is ever discarded."
-        </div>
-
-        <div class="card animate-on-scroll">
-          <div class="card-header"><span class="card-icon">🔄</span> Rotation Schedule</div>
-          <ul class="detail-list">
-            <li><span class="dl-label">10:00:00</span><span class="dl-value mono text-cyan">A7F3-19BC</span></li>
-            <li><span class="dl-label">10:05:00</span><span class="dl-value mono text-muted">E2C8-71FA</span></li>
-            <li><span class="dl-label">10:10:00</span><span class="dl-value mono text-muted">9D44-B6AC</span></li>
-            <li><span class="dl-label">10:15:00</span><span class="dl-value mono text-muted">C1F8-03DE</span></li>
-          </ul>
+          "Previous references remain available in the immutable transaction history."
         </div>
       </div>
     </div>
@@ -316,63 +316,75 @@
   <!-- ================================================================ -->
   <section class="page" id="page-6">
     <div class="page-header animate-on-scroll">
-      <div class="page-badge">PAGE 06 — MESSAGE STRUCTURE</div>
+      <div class="page-badge">PAGE 06 — MESSAGE STRUCTURE & TRANSIT</div>
       <h2 class="page-title">Transaction Message Visualization</h2>
-      <p class="page-subtitle">Secure message structure, network transit, and tamper detection</p>
+      <p class="page-subtitle">Controlled packet routing from Payment Gateway to Bank with cryptographic tamper protection</p>
     </div>
 
     <div class="card animate-on-scroll mb-20">
-      <div class="card-header"><span class="card-icon">📦</span> Message Structure</div>
+      <div class="card-header"><span class="card-icon">📦</span> Packet Payload Structure</div>
       <div class="packet-structure">
         <div class="packet-header-section">
-          <div class="text-cyan font-bold mb-12" style="font-size:13px;text-transform:uppercase;letter-spacing:1px">Outer Message — Visible Metadata</div>
+          <div class="text-cyan font-bold mb-12" style="font-size:12px;text-transform:uppercase;letter-spacing:1px">Outer Message (Routing Metadata)</div>
           <ul class="detail-list">
-            <li><span class="dl-label">Transaction ID</span><span class="dl-value mono">TXN784529103</span></li>
-            <li><span class="dl-label">Timestamp</span><span class="dl-value mono">10:00:00.000</span></li>
+            <li><span class="dl-label">Transaction ID</span><span class="dl-value mono" id="packet-txnid">TXN784529101</span></li>
+            <li><span class="dl-label">Timestamp</span><span class="dl-value mono" id="packet-time">10:00:00.000</span></li>
             <li><span class="dl-label">Gateway Ref</span><span class="dl-value mono">GW-9A2F7B</span></li>
-            <li><span class="dl-label">Event Type</span><span class="dl-value mono">PAYMENT_INIT</span></li>
-            <li><span class="dl-label">Token</span><span class="dl-value mono text-cyan">A7F3-19BC-42D8</span></li>
+            <li><span class="dl-label">Event Type</span><span class="dl-value mono">EVIDENCE_VERIFY</span></li>
+            <li><span class="dl-label">Token Ref</span><span class="dl-value mono text-cyan" id="packet-token">A7F3-19BC-42D8</span></li>
           </ul>
         </div>
         <div class="packet-payload-section">
-          <div class="text-purple font-bold mb-12" style="font-size:13px;text-transform:uppercase;letter-spacing:1px">Protected Payload</div>
-          <div style="position:relative;min-height:150px">
-            <div style="filter:blur(3px);opacity:0.3;font-family:var(--font-mono);font-size:11px;line-height:2;word-break:break-all">
+          <div class="text-purple font-bold mb-12" style="font-size:12px;text-transform:uppercase;letter-spacing:1px">Protected Payload</div>
+          <div style="position:relative;min-height:140px">
+            <div style="filter:blur(2px);opacity:0.4;font-family:var(--font-mono);font-size:11px;line-height:1.8;word-break:break-all">
               7f8a2c4e9b1d3f5a8c0e2b4d6f8a1c3e5b7d9f0a2c4e6b8d0f1a3c5e7b9d1f3a5c7e9b0d2f4a6c8e0b2d4f6a8c1e3b5d7f9a0c2e4b6d8f0a1c3e5b
             </div>
             <div class="packet-payload-overlay">🔐</div>
           </div>
-          <div class="text-muted mt-8" style="font-size:11px">Encrypted / Authenticated Transaction Evidence</div>
+          <div class="text-secondary mt-8" style="font-size:11.5px">Encrypted & Signed Transaction Evidence</div>
         </div>
       </div>
     </div>
 
+    <!-- Controlled Network Transit -->
     <div class="card animate-on-scroll mb-20" id="packet-visual">
-      <div class="card-header"><span class="card-icon">📡</span> Network Transit</div>
+      <div class="card-header justify-between">
+        <div class="flex items-center gap-8"><span class="card-icon">📡</span> Network Transit: Gateway ➔ Bank</div>
+        <div class="flex gap-8">
+          <button class="btn btn-secondary" id="transmit-packet-btn" style="padding:4px 12px;font-size:11.5px;">▶ Transmit Evidence</button>
+          <button class="btn btn-secondary" id="reset-packet-btn" style="padding:4px 12px;font-size:11.5px;">↺ Reset</button>
+        </div>
+      </div>
+      
       <div class="packet-container">
-        <div class="flow-node"><span class="node-icon">📱</span><span class="node-label">Sender</span></div>
-        <div class="packet-path"></div>
-        <div class="packet-dot"></div>
-        <div class="flow-node"><span class="node-icon">🌐</span><span class="node-label">Payment Gateway</span></div>
-        <div class="flow-node"><span class="node-icon">🏦</span><span class="node-label">Bank</span></div>
+        <div class="flow-node flow-node-small"><span class="node-icon">📱</span><span class="node-label">Sender</span></div>
+        <div style="width:50px;height:2px;background:#cbd5e1;"></div>
+        <div class="flow-node flow-node-small" id="node-gateway"><span class="node-icon">🌐</span><span class="node-label">Payment Gateway</span></div>
+        <div class="packet-path-gw-bank"></div>
+        <div class="packet-dot animating-gw-bank" id="packet-transit-dot"></div>
+        <div class="flow-node flow-node-small" id="node-bank"><span class="node-icon">🏦</span><span class="node-label">Bank</span></div>
+      </div>
+      <div class="text-secondary mt-8 text-center" style="font-size:11.5px">
+        <em>Note: Active verification evidence specifically travels between Payment Gateway and Authoritative Bank Network.</em>
       </div>
     </div>
 
     <div class="card animate-on-scroll">
-      <div class="card-header"><span class="card-icon">🚨</span> Tamper Detection Demo</div>
-      <p class="text-secondary mb-16">Click to simulate a tampering attempt on the transaction data:</p>
-      <button class="btn btn-danger" id="tamper-btn">⚠️ Test Tamper Detection</button>
+      <div class="card-header"><span class="card-icon">🚨</span> Tamper Detection Simulation</div>
+      <p class="text-secondary mb-16">Test modifying payload amount from ₹1,499 to ₹1,999:</p>
+      <button class="btn btn-danger" id="tamper-btn">⚠️ Inject Malicious Modification</button>
       <div id="tamper-result" class="hidden mt-20">
         <div class="danger-box">
           <div class="flex items-center gap-16 mb-12">
-            <span>Amount: <span class="tampered-text mono">₹1,499</span></span>
+            <span>Original: <span class="tampered-text mono">₹1,499</span></span>
             <span class="comparison-arrow">→</span>
-            <span class="tampered-new mono">₹1,999</span>
+            <span>Altered: <span class="tampered-new mono">₹1,999</span></span>
           </div>
           <div class="flex items-center gap-12 mb-12">
             <span class="status-badge status-danger status-badge-lg">🔴 CRYPTOGRAPHIC VERIFICATION FAILED</span>
           </div>
-          <p class="font-bold text-red">Transaction evidence rejected. The modified data does not match the recorded cryptographic proof.</p>
+          <p class="font-bold text-red">Transaction evidence rejected. Automatic refund is immediately halted.</p>
         </div>
       </div>
     </div>
@@ -383,53 +395,62 @@
   <!-- ================================================================ -->
   <section class="page" id="page-7">
     <div class="page-header animate-on-scroll">
-      <div class="page-badge">PAGE 07 — TRANSACTION MONITORING</div>
+      <div class="page-badge">PAGE 07 — CONTINUOUS MONITORING</div>
       <h2 class="page-title">Continuous Transaction Engine</h2>
-      <p class="page-subtitle">Persistent monitoring until a terminal state is reached</p>
+      <p class="page-subtitle">Persistent monitoring until a verified terminal state is reached</p>
     </div>
 
     <div class="grid-2">
       <div class="flex flex-col gap-20">
         <div class="engine-monitor animate-on-scroll" id="engine-status">
-          <div class="card-header"><span class="card-icon">⚙️</span> Transaction Monitor</div>
-          <div class="engine-row">
-            <span class="label">Transaction</span>
-            <span class="mono font-bold">TXN784529103</span>
+          <div class="card-header justify-between">
+            <div class="flex items-center gap-8"><span class="card-icon">⚙️</span> Engine State Monitor</div>
+            <span class="status-badge status-success" id="engine-indicator-badge">🟢 RUNNING</span>
           </div>
           <div class="engine-row">
-            <span class="label">Status</span>
+            <span class="label">Transaction</span>
+            <span class="mono font-bold" id="engine-current-txnid">TXN784529101</span>
+          </div>
+          <div class="engine-row">
+            <span class="label">Initial State</span>
             <span class="status-badge status-danger">🔴 Payment Failed</span>
           </div>
           <div class="engine-row">
-            <span class="label">Engine</span>
-            <span class="engine-dot active"></span>
-            <span class="text-green font-bold">ACTIVE</span>
+            <span class="label">Engine State</span>
+            <span class="engine-dot active" id="engine-live-dot"></span>
+            <span class="text-green font-bold" id="engine-live-text">ACTIVE POLLING</span>
           </div>
           <div class="engine-row">
-            <span class="label">Uptime</span>
-            <span class="mono text-cyan" id="engine-uptime">00:00:00</span>
+            <span class="label">Active Uptime</span>
+            <span class="mono text-cyan" id="engine-uptime">00:00:14</span>
+          </div>
+          <div class="mt-16 flex gap-8">
+            <button class="btn btn-success btn-full" id="engine-stop-refunded-btn">Mark Refund Received (Stop Engine)</button>
           </div>
         </div>
 
         <div class="card animate-on-scroll">
-          <div class="card-header"><span class="card-icon">🏁</span> Terminal States</div>
+          <div class="card-header"><span class="card-icon">🏁</span> Terminal States (Monitoring Halts)</div>
           <div class="terminal-states">
-            <div class="terminal-state" style="background:rgba(0,255,136,0.08);color:var(--success)">✅ REFUNDED</div>
-            <div class="terminal-state" style="background:rgba(0,255,136,0.08);color:var(--success)">✅ REVERSED</div>
-            <div class="terminal-state" style="background:rgba(255,170,0,0.08);color:var(--warning)">⚠️ RECONCILIATION</div>
-            <div class="terminal-state" style="background:rgba(255,51,85,0.08);color:var(--danger)">🔴 INVALID / TAMPERED</div>
+            <div class="terminal-state" style="background:var(--success-bg);color:var(--success);border-color:var(--success-border)">✅ REFUNDED</div>
+            <div class="terminal-state" style="background:var(--success-bg);color:var(--success);border-color:var(--success-border)">✅ REVERSED</div>
+            <div class="terminal-state" style="background:var(--warning-bg);color:var(--warning);border-color:var(--warning-border)">⚠️ RECONCILIATION</div>
+            <div class="terminal-state" style="background:var(--danger-bg);color:var(--danger);border-color:var(--danger-border)">🔴 INVALID / TAMPERED</div>
           </div>
         </div>
       </div>
 
       <div class="flex flex-col gap-20">
         <div class="card animate-on-scroll">
-          <div class="card-header"><span class="card-icon">📋</span> Verification Cycles</div>
+          <div class="card-header justify-between">
+            <div class="flex items-center gap-8"><span class="card-icon">📋</span> Live Verification Cycles</div>
+            <button class="btn btn-secondary" id="clear-engine-log-btn" style="padding:2px 8px;font-size:11px;">Clear</button>
+          </div>
           <div class="engine-log" id="engine-log"></div>
         </div>
 
         <div class="highlight-box animate-on-scroll">
-          <strong>🔄 Monitoring continues until the transaction reaches a terminal state.</strong> The engine does not stop simply because the payment initially failed.
+          <strong>“Monitoring continues until the transaction reaches a terminal state.”</strong>
         </div>
       </div>
     </div>
@@ -442,31 +463,32 @@
     <div class="page-header animate-on-scroll">
       <div class="page-badge">PAGE 08 — CASE STUDY 1</div>
       <h2 class="page-title">Case 1: Payment Debit Confirmed</h2>
-      <p class="page-subtitle">Successful recovery — debit confirmed immediately after failure</p>
+      <p class="page-subtitle">Successful recovery — debit confirmed immediately; rapid safe refund initiated</p>
     </div>
 
-    <div class="mb-20 animate-on-scroll">
-      <span class="status-badge status-success status-badge-lg">✅ SUCCESSFUL RECOVERY</span>
+    <div class="mb-20 flex justify-between items-center animate-on-scroll">
+      <span class="status-badge status-success status-badge-lg">✅ CASE 1 — SUCCESSFUL RECOVERY</span>
+      <button class="btn btn-primary" id="run-case1-btn">▶ Execute Case 1</button>
     </div>
 
     <div class="grid-2">
       <div class="card animate-on-scroll">
-        <div class="card-header"><span class="card-icon">📅</span> Event Timeline</div>
+        <div class="card-header"><span class="card-icon">📅</span> Real-Time Event Timeline</div>
         <div class="timeline" id="case1-timeline">
-          <div class="timeline-item" data-step="1"><div class="timeline-time">10:00:00</div><div class="timeline-label">Payment initiated</div></div>
-          <div class="timeline-item" data-step="2"><div class="timeline-time">10:00:02</div><div class="timeline-label">Payment failed</div></div>
-          <div class="timeline-item" data-step="3"><div class="timeline-time">10:00:03</div><div class="timeline-label">Bank debit confirmation received</div></div>
-          <div class="timeline-item" data-step="4"><div class="timeline-time">10:00:04</div><div class="timeline-label">Gateway evidence received</div></div>
-          <div class="timeline-item" data-step="5"><div class="timeline-time">10:00:05</div><div class="timeline-label">Transaction IDs matched</div></div>
-          <div class="timeline-item" data-step="6"><div class="timeline-time">10:00:06</div><div class="timeline-label">Amount matched</div></div>
-          <div class="timeline-item" data-step="7"><div class="timeline-time">10:00:07</div><div class="timeline-label">Cryptographic evidence verified</div></div>
-          <div class="timeline-item" data-step="8"><div class="timeline-time">10:00:08</div><div class="timeline-label">Order confirmed NOT completed</div></div>
+          <div class="timeline-item" data-step="1"><div class="timeline-time case1-time">10:00:00</div><div class="timeline-label">Payment initiated</div></div>
+          <div class="timeline-item" data-step="2"><div class="timeline-time case1-time">10:00:02</div><div class="timeline-label">Payment failed (Gateway timeout)</div></div>
+          <div class="timeline-item" data-step="3"><div class="timeline-time case1-time">10:00:03</div><div class="timeline-label">Bank debit confirmation received</div></div>
+          <div class="timeline-item" data-step="4"><div class="timeline-time case1-time">10:00:04</div><div class="timeline-label">Gateway evidence received</div></div>
+          <div class="timeline-item" data-step="5"><div class="timeline-time case1-time">10:00:05</div><div class="timeline-label">Transaction IDs matched</div></div>
+          <div class="timeline-item" data-step="6"><div class="timeline-time case1-time">10:00:06</div><div class="timeline-label">Amount matched (₹1,499)</div></div>
+          <div class="timeline-item" data-step="7"><div class="timeline-time case1-time">10:00:07</div><div class="timeline-label">Cryptographic evidence verified</div></div>
+          <div class="timeline-item" data-step="8"><div class="timeline-time case1-time">10:00:08</div><div class="timeline-label">Order confirmed NOT completed</div></div>
         </div>
       </div>
 
       <div class="flex flex-col gap-20">
         <div class="card animate-on-scroll">
-          <div class="card-header"><span class="card-icon">✅</span> Refund Eligibility</div>
+          <div class="card-header"><span class="card-icon">✅</span> Refund Eligibility Check</div>
           <ul class="check-list" id="case1-checklist">
             <li class="check-item" data-step="1"><span class="check-icon">⬜</span> Payment failed</li>
             <li class="check-item" data-step="2"><span class="check-icon">⬜</span> Order not completed</li>
@@ -478,11 +500,11 @@
           </ul>
         </div>
 
-        <div class="card animate-on-scroll text-center" id="case1-result" style="opacity:0.3">
+        <div class="card animate-on-scroll text-center" id="case1-result" style="opacity:0.35">
           <span class="status-badge status-success status-badge-lg mb-12">🟢 SAFE TO INITIATE REFUND / REVERSAL</span>
           <p class="mt-12 font-bold">Refund request initiated immediately</p>
           <div class="flow-horizontal mt-16" style="justify-content:center;gap:0">
-            <div class="flow-node flow-node-small"><span class="node-label">Bank</span></div>
+            <div class="flow-node flow-node-small"><span class="node-label">Bank Network</span></div>
             <div class="flow-arrow-h"></div>
             <div class="flow-node flow-node-small"><span class="node-label">Refund Ack</span></div>
             <div class="flow-arrow-h"></div>
@@ -490,7 +512,7 @@
           </div>
           <div class="success-box mt-16">
             <div class="text-green text-xl font-extra">✅ REFUND COMPLETED</div>
-            <p class="text-secondary mt-8">Avoidable waiting reduced</p>
+            <p class="text-secondary mt-4" style="font-size:13px">Avoidable waiting reduced — settled without waiting for multi-day batch cycles.</p>
           </div>
         </div>
       </div>
@@ -504,33 +526,34 @@
     <div class="page-header animate-on-scroll">
       <div class="page-badge">PAGE 09 — CASE STUDY 2</div>
       <h2 class="page-title">Case 2: Debit Confirmed Late</h2>
-      <p class="page-subtitle">Delayed recovery — bank confirmation arrives after a waiting period</p>
+      <p class="page-subtitle">Delayed recovery — continuous monitoring preserves evidence until bank confirmation arrives</p>
     </div>
 
-    <div class="mb-20 animate-on-scroll">
-      <span class="status-badge status-warning status-badge-lg">🟡 DELAYED RECOVERY</span>
+    <div class="mb-20 flex justify-between items-center animate-on-scroll">
+      <span class="status-badge status-warning status-badge-lg">🟡 CASE 2 — DELAYED RECOVERY</span>
+      <button class="btn btn-warning" id="run-case2-btn">▶ Execute Case 2</button>
     </div>
 
     <div class="grid-2">
       <div class="card animate-on-scroll">
-        <div class="card-header"><span class="card-icon">📅</span> Event Timeline</div>
+        <div class="card-header"><span class="card-icon">📅</span> Persistent Timeline</div>
         <div class="timeline" id="case2-timeline">
-          <div class="timeline-item" data-type="danger"><div class="timeline-time">10:00</div><div class="timeline-label">Payment failed</div></div>
-          <div class="timeline-item" data-type="warning"><div class="timeline-time">10:00</div><div class="timeline-label">No debit confirmation</div></div>
-          <div class="timeline-item" data-type="warning"><div class="timeline-time">10:05</div><div class="timeline-label">Still waiting... Engine monitoring</div></div>
-          <div class="timeline-item" data-type="warning"><div class="timeline-time">10:10</div><div class="timeline-label">Still waiting... Evidence preserved</div></div>
-          <div class="timeline-item" data-type="success"><div class="timeline-time">10:15</div><div class="timeline-label">🎉 Bank confirmation arrives!</div></div>
+          <div class="timeline-item" data-type="danger"><div class="timeline-time case2-time">10:00</div><div class="timeline-label">Payment failed</div></div>
+          <div class="timeline-item" data-type="warning"><div class="timeline-time case2-time">10:00</div><div class="timeline-label">No immediate debit confirmation</div></div>
+          <div class="timeline-item" data-type="warning"><div class="timeline-time case2-time">10:05</div><div class="timeline-label">Still waiting... Engine continues tracking</div></div>
+          <div class="timeline-item" data-type="warning"><div class="timeline-time case2-time">10:10</div><div class="timeline-label">Still waiting... Evidence preserved in ledger</div></div>
+          <div class="timeline-item" data-type="success"><div class="timeline-time case2-time">10:15</div><div class="timeline-label">🎉 Bank confirmation arrives & verified!</div></div>
         </div>
       </div>
 
       <div class="flex flex-col gap-20">
-        <div class="card animate-on-scroll" id="case2-correlation" style="opacity:0.3">
-          <div class="card-header"><span class="card-icon">🔗</span> Evidence Correlation</div>
+        <div class="card animate-on-scroll" id="case2-correlation" style="opacity:0.35">
+          <div class="card-header"><span class="card-icon">🔗</span> Automatic Correlation</div>
           <ul class="detail-list">
             <li><span class="dl-label">Transaction ID</span><span class="dl-value text-green">✓ MATCHED</span></li>
             <li><span class="dl-label">Amount</span><span class="dl-value text-green">✓ ₹1,499</span></li>
             <li><span class="dl-label">Timestamp</span><span class="dl-value text-green">✓ VALID</span></li>
-            <li><span class="dl-label">RRN/Reference</span><span class="dl-value text-green">✓ MATCHED</span></li>
+            <li><span class="dl-label">RRN / Reference</span><span class="dl-value text-green">✓ MATCHED</span></li>
             <li><span class="dl-label">Bank Confirmation</span><span class="dl-value text-green">✓ RECEIVED</span></li>
           </ul>
           <div class="mt-16 text-center">
@@ -539,18 +562,7 @@
         </div>
 
         <div class="highlight-box animate-on-scroll">
-          <strong>💡 Key Advantage:</strong> No need to restart the entire reconciliation process. Existing transaction evidence has already been preserved by the framework.
-        </div>
-
-        <div class="card animate-on-scroll text-center" id="case2-result" style="opacity:0.3">
-          <div class="text-green text-lg font-bold">Refund initiated immediately upon late confirmation</div>
-          <div class="flow-horizontal mt-16" style="justify-content:center;gap:0">
-            <div class="flow-node flow-node-small"><span class="node-label">Confirm</span></div>
-            <div class="flow-arrow-h"></div>
-            <div class="flow-node flow-node-small"><span class="node-label">Verify</span></div>
-            <div class="flow-arrow-h"></div>
-            <div class="flow-node flow-node-small success"><span class="node-label">Refund</span></div>
-          </div>
+          <strong>“No need to restart the entire reconciliation process. Existing transaction evidence has already been preserved.”</strong>
         </div>
       </div>
     </div>
@@ -563,22 +575,23 @@
     <div class="page-header animate-on-scroll">
       <div class="page-badge">PAGE 10 — CASE STUDY 3</div>
       <h2 class="page-title">Case 3: No Debit Confirmation</h2>
-      <p class="page-subtitle">Safety case — uncertain payment with missing authoritative evidence</p>
+      <p class="page-subtitle">Safety case — uncertain payment where debit never confirmed; auto-refund strictly blocked</p>
     </div>
 
-    <div class="mb-20 animate-on-scroll">
-      <span class="status-badge status-danger status-badge-lg">🔴 MISSING / UNCERTAIN PAYMENT</span>
+    <div class="mb-20 flex justify-between items-center animate-on-scroll">
+      <span class="status-badge status-danger status-badge-lg">🔴 CASE 3 — MISSING / UNCERTAIN PAYMENT</span>
+      <button class="btn btn-danger" id="run-case3-btn">▶ Execute Case 3</button>
     </div>
 
     <div class="grid-2">
       <div class="card animate-on-scroll">
-        <div class="card-header"><span class="card-icon">📅</span> Event Timeline</div>
+        <div class="card-header"><span class="card-icon">📅</span> Timeline Log</div>
         <div class="timeline" id="case3-timeline">
-          <div class="timeline-item" data-type="danger"><div class="timeline-time">10:00</div><div class="timeline-label">Payment failed</div></div>
-          <div class="timeline-item" data-type="warning"><div class="timeline-time">10:05</div><div class="timeline-label">No debit evidence</div></div>
-          <div class="timeline-item" data-type="warning"><div class="timeline-time">10:10</div><div class="timeline-label">No debit evidence</div></div>
-          <div class="timeline-item" data-type="warning"><div class="timeline-time">10:15</div><div class="timeline-label">No debit evidence</div></div>
-          <div class="timeline-item" data-type="danger"><div class="timeline-time">10:20</div><div class="timeline-label">No debit evidence — threshold reached</div></div>
+          <div class="timeline-item" data-type="danger"><div class="timeline-time case3-time">10:00</div><div class="timeline-label">Payment failed</div></div>
+          <div class="timeline-item" data-type="warning"><div class="timeline-time case3-time">10:05</div><div class="timeline-label">No debit evidence received</div></div>
+          <div class="timeline-item" data-type="warning"><div class="timeline-time case3-time">10:10</div><div class="timeline-label">No debit evidence received</div></div>
+          <div class="timeline-item" data-type="warning"><div class="timeline-time case3-time">10:15</div><div class="timeline-label">No debit evidence received</div></div>
+          <div class="timeline-item" data-type="danger"><div class="timeline-time case3-time">10:20</div><div class="timeline-label">No debit evidence (Timeout reached)</div></div>
         </div>
       </div>
 
@@ -588,22 +601,17 @@
         </div>
 
         <div class="danger-box animate-on-scroll">
-          <div class="text-red text-xl font-extra text-center mb-12">🚫 DO NOT AUTO-REFUND</div>
-          <p class="text-center">Automatic refund is <strong>blocked</strong> for this transaction. Authoritative debit evidence has not been received.</p>
+          <div class="text-red text-xl font-extra text-center mb-12">DO NOT AUTO-REFUND</div>
+          <p class="text-center" style="font-size:13.5px">Authoritative debit confirmation never arrived. The system prevents duplicate or wrongful refunds.</p>
         </div>
 
         <div class="card animate-on-scroll">
           <div class="card-header"><span class="card-icon">📋</span> Exception / Reconciliation Queue</div>
           <ul class="detail-list">
             <li><span class="dl-label">Reason</span><span class="dl-value text-yellow">Authoritative debit evidence not received</span></li>
-            <li><span class="dl-label">Prevents</span><span class="dl-value text-green">Double refunds & false refunds</span></li>
-            <li><span class="dl-label">Engine</span><span class="dl-value"><span class="engine-dot active"></span> Still monitoring</span></li>
-            <li><span class="dl-label">Action</span><span class="dl-value text-cyan">Manual reconciliation required</span></li>
+            <li><span class="dl-label">Protection</span><span class="dl-value text-green">Prevents false / double refunds</span></li>
+            <li><span class="dl-label">Action</span><span class="dl-value text-cyan">Transferred to Exception Queue</span></li>
           </ul>
-        </div>
-
-        <div class="highlight-box animate-on-scroll">
-          <strong>🛡️ Safety Principle:</strong> The engine continues monitoring until a valid terminal state is reached. No refund is issued without authoritative confirmation.
         </div>
       </div>
     </div>
@@ -621,9 +629,9 @@
 
     <div class="grid-2">
       <div class="card animate-on-scroll">
-        <div class="card-header"><span class="card-icon">📊</span> Evidence Matrix — Verified Transaction</div>
+        <div class="card-header"><span class="card-icon">📊</span> Multi-Source Evidence Matrix</div>
         <table class="evidence-table" id="evidence-matrix">
-          <thead><tr><th>Evidence</th><th>Status</th></tr></thead>
+          <thead><tr><th>Evidence Field</th><th>Verification Status</th></tr></thead>
           <tbody>
             <tr><td>Transaction ID</td><td><span class="evidence-status" data-target="match">—</span></td></tr>
             <tr><td>Order ID</td><td><span class="evidence-status" data-target="match">—</span></td></tr>
@@ -639,20 +647,17 @@
       </div>
 
       <div class="flex flex-col gap-20">
-        <div class="card animate-on-scroll text-center" id="evidence-decision" style="opacity:0.3">
+        <div class="card animate-on-scroll text-center" id="evidence-decision" style="opacity:0.35">
           <div class="card-header justify-center"><span class="card-icon">🧠</span> Decision</div>
           <div class="text-green text-xl font-extra mb-8">HIGH-CONFIDENCE VERIFIED TRANSACTION</div>
           <div class="status-badge status-success status-badge-lg">→ Refund Eligible</div>
         </div>
 
         <div class="card animate-on-scroll">
-          <div class="card-header"><span class="card-icon">⚠️</span> If Critical Evidence Missing</div>
+          <div class="card-header"><span class="card-icon">⚠️</span> Incomplete Evidence Fallback</div>
           <div class="text-center">
             <div class="text-yellow text-lg font-bold mb-8">VERIFICATION INCOMPLETE</div>
             <div class="status-badge status-warning">→ No Automatic Refund</div>
-          </div>
-          <div class="warning-box mt-16">
-            The system requires all critical evidence fields to pass verification before approving any automatic refund.
           </div>
         </div>
       </div>
@@ -666,19 +671,19 @@
     <div class="page-header animate-on-scroll">
       <div class="page-badge">PAGE 12 — IMMUTABLE HISTORY</div>
       <h2 class="page-title">Immutable / Tamper-Evident History</h2>
-      <p class="page-subtitle">Blockchain-inspired cryptographic event chain ensuring data integrity</p>
+      <p class="page-subtitle">Cryptographic event chain linking each state change to the prior block hash</p>
     </div>
 
     <div class="grid-2">
       <div class="card animate-on-scroll">
-        <div class="card-header"><span class="card-icon">⛓️</span> Event Chain</div>
+        <div class="card-header"><span class="card-icon">⛓️</span> Cryptographic Event Chain</div>
         <div class="chain-container" id="event-chain">
           <div class="chain-block" data-event="1">
             <div class="chain-block-header">
               <span class="chain-block-title">EVENT 1 — Payment Initiated</span>
               <span class="chain-block-hash">Hash: 8F2A...</span>
             </div>
-            <div class="chain-block-detail">Amount: ₹1,499 | TXN784529103</div>
+            <div class="chain-block-detail">Amount: ₹1,499 | Prev: GENESIS</div>
           </div>
           <div class="chain-link"></div>
           <div class="chain-block" data-event="2">
@@ -686,7 +691,7 @@
               <span class="chain-block-title">EVENT 2 — Payment Failed</span>
               <span class="chain-block-hash">Hash: B71C...</span>
             </div>
-            <div class="chain-block-detail">Reason: Gateway Timeout | Prev: 8F2A...</div>
+            <div class="chain-block-detail">Gateway Timeout | Prev: 8F2A...</div>
           </div>
           <div class="chain-link"></div>
           <div class="chain-block" data-event="3" id="chain-event-3">
@@ -694,7 +699,7 @@
               <span class="chain-block-title">EVENT 3 — Debit Confirmed</span>
               <span class="chain-block-hash">Hash: 19DA...</span>
             </div>
-            <div class="chain-block-detail"><span id="chain-amount-3">Amount: ₹1,499</span> | Bank: CONFIRMED | Prev: B71C...</div>
+            <div class="chain-block-detail"><span id="chain-amount-3">Amount: ₹1,499</span> | Prev: B71C...</div>
           </div>
           <div class="chain-link" id="chain-link-3"></div>
           <div class="chain-block" data-event="4">
@@ -702,7 +707,7 @@
               <span class="chain-block-title">EVENT 4 — Refund Requested</span>
               <span class="chain-block-hash">Hash: C4E8...</span>
             </div>
-            <div class="chain-block-detail">Auto-initiated | Prev: 19DA...</div>
+            <div class="chain-block-detail">Auto-decision verified | Prev: 19DA...</div>
           </div>
           <div class="chain-link" id="chain-link-4"></div>
           <div class="chain-block" data-event="5">
@@ -710,31 +715,20 @@
               <span class="chain-block-title">EVENT 5 — Refund Completed</span>
               <span class="chain-block-hash">Hash: 77AF...</span>
             </div>
-            <div class="chain-block-detail">₹1,499 returned | Prev: C4E8...</div>
+            <div class="chain-block-detail">Settlement Ack | Prev: C4E8...</div>
           </div>
         </div>
       </div>
 
       <div class="flex flex-col gap-20">
         <div class="card animate-on-scroll">
-          <div class="card-header"><span class="card-icon">🔐</span> Integrity Properties</div>
-          <ul class="detail-list">
-            <li><span class="dl-label">Chaining</span><span class="dl-value text-cyan">Each event references previous hash</span></li>
-            <li><span class="dl-label">Immutability</span><span class="dl-value text-cyan">Modification breaks chain integrity</span></li>
-            <li><span class="dl-label">Auditability</span><span class="dl-value text-cyan">Complete verifiable history</span></li>
-            <li><span class="dl-label">Detection</span><span class="dl-value text-cyan">Instant tamper detection</span></li>
-          </ul>
-        </div>
-
-        <div class="card animate-on-scroll">
-          <div class="card-header"><span class="card-icon">🚨</span> Tamper Detection Demo</div>
-          <p class="text-secondary mb-16">Simulate modifying EVENT 3 (change ₹1,499 → ₹2,499):</p>
-          <button class="btn btn-danger" id="chain-tamper-btn">⚠️ Simulate Tampering</button>
+          <div class="card-header"><span class="card-icon">🚨</span> Simulate Chain Tampering</div>
+          <p class="text-secondary mb-16">Simulate altering historical EVENT 3 Amount to ₹2,499:</p>
+          <button class="btn btn-danger" id="chain-tamper-btn">⚠️ Alter Historical Event</button>
           <div id="chain-tamper-result" class="hidden mt-20">
             <div class="danger-box">
               <div class="text-red text-lg font-extra text-center mb-8">🔴 CHAIN INTEGRITY FAILURE</div>
-              <p class="text-center">"Historical evidence has been altered or no longer matches the recorded integrity proof."</p>
-              <p class="text-center mt-8 text-muted">The engine flags this transaction for investigation.</p>
+              <p class="text-center">“Historical evidence has been altered or no longer matches the recorded integrity proof.”</p>
             </div>
           </div>
         </div>
@@ -749,12 +743,12 @@
     <div class="page-header animate-on-scroll">
       <div class="page-badge">PAGE 13 — DECISION ENGINE</div>
       <h2 class="page-title">Refund Decision Engine</h2>
-      <p class="page-subtitle">Automated multi-factor refund eligibility evaluation</p>
+      <p class="page-subtitle">Multi-factor decision tree ensuring 100% fail-safe evaluation</p>
     </div>
 
     <div class="grid-2">
       <div class="card animate-on-scroll">
-        <div class="card-header"><span class="card-icon">🧠</span> Decision Tree</div>
+        <div class="card-header"><span class="card-icon">🧠</span> Decision Evaluation Tree</div>
         <div class="decision-tree" id="decision-tree">
           <div class="decision-node" data-step="1">Payment Failed?</div>
           <div class="decision-branch"><span class="branch-label branch-yes">YES ↓</span></div>
@@ -780,26 +774,16 @@
 
       <div class="flex flex-col gap-20">
         <div class="card animate-on-scroll">
-          <div class="card-header"><span class="card-icon">⚠️</span> Failure Route</div>
-          <p class="mb-16">If <strong>any</strong> critical check fails, the transaction is routed to:</p>
-          <div class="card-compact text-center" style="background:rgba(255,170,0,0.08);border:1px solid rgba(255,170,0,0.2);border-radius:var(--radius-md)">
-            <div class="text-yellow text-lg font-extra mb-8">🟡 RECONCILIATION</div>
-            <p class="text-muted" style="font-size:13px">Manual review and additional verification required</p>
+          <div class="card-header"><span class="card-icon">⚠️</span> Exception Routing</div>
+          <p class="mb-12">Any failed check automatically routes to:</p>
+          <div class="card-compact text-center" style="background:var(--warning-bg);border:1px solid var(--warning-border);border-radius:var(--radius-md)">
+            <div class="text-yellow text-lg font-extra mb-4">🟡 RECONCILIATION</div>
+            <p class="text-secondary" style="font-size:12.5px">Safe holding queue; no automated disbursements</p>
           </div>
         </div>
 
         <div class="highlight-box animate-on-scroll">
-          <strong>🛡️ Core Safety Rule:</strong> Never automatically refund an uncertain transaction. Every refund decision requires all critical checks to pass.
-        </div>
-
-        <div class="card animate-on-scroll">
-          <div class="card-header"><span class="card-icon">📊</span> Decision Factors</div>
-          <ul class="detail-list">
-            <li><span class="dl-label">Inputs</span><span class="dl-value text-cyan">7 critical checks</span></li>
-            <li><span class="dl-label">Processing</span><span class="dl-value text-cyan">&lt; 1 second</span></li>
-            <li><span class="dl-label">Outcomes</span><span class="dl-value text-cyan">REFUND or RECONCILIATION</span></li>
-            <li><span class="dl-label">Override</span><span class="dl-value text-cyan">Never — fail-safe only</span></li>
-          </ul>
+          <strong>“Never automatically refund an uncertain transaction.”</strong>
         </div>
       </div>
     </div>
@@ -837,7 +821,7 @@
             <div class="flow-node flow-node-small"><span class="node-label">Customer</span></div>
           </div>
           <div class="text-center mt-20">
-            <div class="text-red mono text-2xl font-extra glow-text">3–7 Business Days</div>
+            <div class="text-red mono text-2xl font-extra">3–7 Business Days</div>
           </div>
         </div>
       </div>
@@ -870,7 +854,7 @@
     </div>
 
     <div class="card animate-on-scroll mt-30">
-      <div class="card-header"><span class="card-icon">⚡</span> Key Improvements</div>
+      <div class="card-header"><span class="card-icon">⚡</span> Key Structural Paradigm Shifts</div>
       <div class="comparison-highlight"><span class="comparison-old">WAITING</span><span class="comparison-arrow">→</span><span class="comparison-new">CONTINUOUS VERIFICATION</span></div>
       <div class="comparison-highlight"><span class="comparison-old">BATCH RECONCILIATION</span><span class="comparison-arrow">→</span><span class="comparison-new">EVENT-DRIVEN PROCESSING</span></div>
       <div class="comparison-highlight"><span class="comparison-old">MANUAL CHECKS</span><span class="comparison-arrow">→</span><span class="comparison-new">AUTOMATED VALIDATION</span></div>
@@ -883,75 +867,56 @@
   <!-- ================================================================ -->
   <section class="page" id="page-15">
     <div class="page-header animate-on-scroll">
-      <div class="page-badge">PAGE 15 — RESULTS</div>
+      <div class="page-badge">PAGE 15 — PERFORMANCE DASHBOARD</div>
       <h2 class="page-title">Performance Results Dashboard</h2>
-      <p class="page-subtitle">Simulated prototype metrics — demonstrating potential improvements</p>
+      <p class="page-subtitle">Simulated prototype metrics demonstrating latency reduction and safety guarantees</p>
     </div>
 
     <div class="metrics-grid animate-on-scroll" id="metrics-dashboard">
       <div class="metric-card">
-        <div class="metric-value fast" data-target="3">0</div>
+        <div class="metric-value fast" data-target="3">&lt;3s</div>
         <div class="metric-label">Debit Detection Latency</div>
-        <div class="text-muted" style="font-size:11px">seconds</div>
         <div class="metric-bar"><div class="metric-bar-fill" data-fill="95"></div></div>
       </div>
       <div class="metric-card">
-        <div class="metric-value fast" data-target="5">0</div>
+        <div class="metric-value fast" data-target="5">&lt;5s</div>
         <div class="metric-label">Evidence Verification</div>
-        <div class="text-muted" style="font-size:11px">seconds</div>
         <div class="metric-bar"><div class="metric-bar-fill" data-fill="92"></div></div>
       </div>
       <div class="metric-card">
-        <div class="metric-value fast" data-target="10">0</div>
+        <div class="metric-value fast" data-target="10">&lt;10s</div>
         <div class="metric-label">Refund Decision Latency</div>
-        <div class="text-muted" style="font-size:11px">seconds</div>
         <div class="metric-bar"><div class="metric-bar-fill" data-fill="88"></div></div>
       </div>
       <div class="metric-card">
-        <div class="metric-value fast" data-target="15">0</div>
+        <div class="metric-value fast" data-target="15">&lt;15s</div>
         <div class="metric-label">Refund Initiation</div>
-        <div class="text-muted" style="font-size:11px">seconds</div>
         <div class="metric-bar"><div class="metric-bar-fill" data-fill="85"></div></div>
       </div>
       <div class="metric-card">
-        <div class="metric-value fast" data-target="70">0</div>
-        <div class="metric-label">Manual Reconciliation Reduction</div>
-        <div class="text-muted" style="font-size:11px">percent</div>
+        <div class="metric-value fast" data-target="70">~70%</div>
+        <div class="metric-label">Manual Recon Reduction</div>
         <div class="metric-bar"><div class="metric-bar-fill" data-fill="70"></div></div>
       </div>
       <div class="metric-card">
-        <div class="metric-value" data-target="5" style="color:var(--warning)">0</div>
+        <div class="metric-value" data-target="5" style="color:var(--warning)">~5%</div>
         <div class="metric-label">Exception Transactions</div>
-        <div class="text-muted" style="font-size:11px">percent</div>
         <div class="metric-bar"><div class="metric-bar-fill" data-fill="5" style="background:var(--warning)"></div></div>
       </div>
       <div class="metric-card">
-        <div class="metric-value fast" data-target="100">0</div>
-        <div class="metric-label">Duplicate Refund Prevention</div>
-        <div class="text-muted" style="font-size:11px">percent</div>
+        <div class="metric-value fast" data-target="100">100%</div>
+        <div class="metric-label">Duplicate Prevention</div>
         <div class="metric-bar"><div class="metric-bar-fill" data-fill="100"></div></div>
       </div>
       <div class="metric-card">
-        <div class="metric-value fast" data-target="100">0</div>
+        <div class="metric-value fast" data-target="100">100%</div>
         <div class="metric-label">Tamper Detection</div>
-        <div class="text-muted" style="font-size:11px">percent</div>
         <div class="metric-bar"><div class="metric-bar-fill" data-fill="100"></div></div>
-      </div>
-    </div>
-
-    <div class="grid-2 mt-30 animate-on-scroll">
-      <div class="card text-center">
-        <div class="text-muted mb-8" style="font-size:11px;text-transform:uppercase;letter-spacing:2px">Traditional Process</div>
-        <div class="text-red mono text-2xl font-extra">3–7 Business Days</div>
-      </div>
-      <div class="card text-center card-glow">
-        <div class="text-muted mb-8" style="font-size:11px;text-transform:uppercase;letter-spacing:2px">Proposed Framework</div>
-        <div class="text-green mono text-lg font-extra">Reduced Avoidable Processing Time</div>
       </div>
     </div>
 
     <div class="warning-box mt-20 animate-on-scroll text-center">
-      <strong>⚠️ Prototype / Simulation Result</strong> — not production banking performance. Metrics are from simulated scenarios demonstrating framework capabilities.
+      <strong>⚠️ Prototype / Simulation Result — not production banking performance.</strong>
     </div>
   </section>
 
@@ -960,57 +925,44 @@
   <!-- ================================================================ -->
   <section class="page" id="page-16">
     <div class="page-header animate-on-scroll">
-      <div class="page-badge">PAGE 16 — LIVE SIMULATION</div>
+      <div class="page-badge">PAGE 16 — MULTI-TRANSACTION SIMULATION</div>
       <h2 class="page-title">Complete Live Simulation</h2>
-      <p class="page-subtitle">Run all three scenarios simultaneously and observe the framework in action</p>
+      <p class="page-subtitle">Execute all 5 real-world transactions across the 3 core framework scenarios</p>
     </div>
 
-    <div class="text-center mb-30 animate-on-scroll">
-      <button class="btn btn-primary btn-xl" id="run-simulation-btn">▶ RUN TRANSACTION SIMULATION</button>
+    <div class="flex gap-12 justify-center mb-30 animate-on-scroll">
+      <button class="btn btn-primary btn-xl" id="run-simulation-btn">▶ RUN SIMULATION (ALL 3 SCENARIOS)</button>
+      <button class="btn btn-secondary" id="reset-simulation-btn">↺ Reset Simulation</button>
     </div>
 
     <div class="sim-container animate-on-scroll">
       <div class="sim-scenario" id="sim-scenario-1">
         <div class="sim-scenario-header">
-          <span>Scenario 1</span>
-          <span class="status-badge status-success" style="font-size:10px">Successful Recovery</span>
+          <span>Case 1: Successful Recovery</span>
+          <span class="status-badge status-success" style="font-size:10px">TXN-01 & 04</span>
         </div>
         <div class="sim-scenario-body" id="sim-output-1"></div>
       </div>
+      
       <div class="sim-scenario" id="sim-scenario-2">
         <div class="sim-scenario-header">
-          <span>Scenario 2</span>
-          <span class="status-badge status-warning" style="font-size:10px">Delayed Recovery</span>
+          <span>Case 2: Delayed Recovery</span>
+          <span class="status-badge status-warning" style="font-size:10px">TXN-02</span>
         </div>
         <div class="sim-scenario-body" id="sim-output-2"></div>
       </div>
+      
       <div class="sim-scenario" id="sim-scenario-3">
         <div class="sim-scenario-header">
-          <span>Scenario 3</span>
-          <span class="status-badge status-danger" style="font-size:10px">Missing Confirmation</span>
+          <span>Case 3: Missing Debit (Safe)</span>
+          <span class="status-badge status-danger" style="font-size:10px">TXN-03 & 05</span>
         </div>
         <div class="sim-scenario-body" id="sim-output-3"></div>
       </div>
     </div>
 
     <div class="quote-box mt-30 animate-on-scroll">
-      "Don't wait for reconciliation to discover what already happened. Continuously capture, correlate and cryptographically verify transaction evidence, then initiate a refund/reversal at the earliest safe point."
-    </div>
-
-    <div class="card mt-20 animate-on-scroll">
-      <div class="card-header"><span class="card-icon">🛡️</span> Framework Properties</div>
-      <div class="grid-4" style="gap:10px">
-        <div class="card-compact text-center" style="font-size:12px;font-weight:700;color:var(--accent-cyan)">Event-Driven</div>
-        <div class="card-compact text-center" style="font-size:12px;font-weight:700;color:var(--accent-cyan)">Evidence-Based</div>
-        <div class="card-compact text-center" style="font-size:12px;font-weight:700;color:var(--accent-cyan)">Crypto-Protected</div>
-        <div class="card-compact text-center" style="font-size:12px;font-weight:700;color:var(--accent-cyan)">Continuously Monitored</div>
-        <div class="card-compact text-center" style="font-size:12px;font-weight:700;color:var(--success)">Multi-Source Verified</div>
-        <div class="card-compact text-center" style="font-size:12px;font-weight:700;color:var(--success)">Duplicate-Resistant</div>
-        <div class="card-compact text-center" style="font-size:12px;font-weight:700;color:var(--success)">Tamper-Evident</div>
-        <div class="card-compact text-center" style="font-size:12px;font-weight:700;color:var(--success)">Fail-Safe</div>
-        <div class="card-compact text-center" style="font-size:12px;font-weight:700;color:var(--accent-purple)">Auditable</div>
-        <div class="card-compact text-center" style="font-size:12px;font-weight:700;color:var(--accent-purple)">Explainable</div>
-      </div>
+      “Don't wait for reconciliation to discover what already happened. Continuously capture, correlate and cryptographically verify transaction evidence, then initiate a refund/reversal at the earliest safe point.”
     </div>
   </section>
 
