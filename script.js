@@ -302,8 +302,9 @@ document.addEventListener('DOMContentLoaded', () => {
       if ($('#token-timer')) $('#token-timer').innerHTML = `<strong class="text-green">🔒 Rotation Frozen — ${txn.status}</strong>`;
     }
 
-    // Render this transaction's dynamic user action timeline
+    // Render this transaction's dynamic user action timeline & evidence matrix
     renderUserActionTimeline(txn);
+    updateEvidenceMatrixForTxn(txn);
     refreshTabIndicators();
 
     addEngineLog($('#engine-log'), getLiveTime(), `Switched view to ${txn.txnId} [Status: ${txn.status}]`, 'info');
@@ -814,6 +815,186 @@ document.addEventListener('DOMContentLoaded', () => {
       if ($('#case2-correlation')) $('#case2-correlation').style.opacity = '1';
       runCase2Btn.textContent = '✅ Case 2 Completed';
       logUserAction(currentTxnId, 'Executed Case 2: Delayed debit confirmation received ➔ Re-correlated & settled.');
+    });
+  }
+
+  // =============================================
+  // EVIDENCE MATRIX SYNCHRONIZATION PER TRANSACTION
+  // =============================================
+  function updateEvidenceMatrixForTxn(txn) {
+    if ($('#mat-active-txnid')) $('#mat-active-txnid').textContent = `TXN-0${txn.id}`;
+    if ($('#mat-val-txnid')) $('#mat-val-txnid').textContent = txn.txnId;
+    if ($('#mat-val-orderid')) $('#mat-val-orderid').textContent = txn.orderId;
+    if ($('#mat-val-amount')) $('#mat-val-amount').textContent = '₹' + txn.amount.toLocaleString();
+    if ($('#mat-val-time')) $('#mat-val-time').textContent = getLiveTime() + '.000';
+    if ($('#mat-val-gw')) $('#mat-val-gw').textContent = txn.gwStatus;
+    if ($('#mat-val-bank')) $('#mat-val-bank').textContent = txn.bankStatus;
+    if ($('#mat-val-rrn')) $('#mat-val-rrn').textContent = txn.rrn;
+    if ($('#mat-val-crypto')) $('#mat-val-crypto').textContent = txn.token;
+
+    // Status logic per case
+    const bankStatEl = $('#mat-stat-bank');
+    const headlineEl = $('#decision-headline');
+    const badgeEl = $('#decision-subbadge');
+    const descEl = $('#decision-desc');
+
+    if (txn.id === 1 || txn.id === 4) {
+      // Case 1: Instant debit confirmed
+      if (bankStatEl) {
+        bankStatEl.className = 'evidence-status match';
+        bankStatEl.textContent = '✓ CONFIRMED';
+      }
+      if (headlineEl) {
+        headlineEl.className = 'text-green text-xl font-extra mb-8';
+        headlineEl.textContent = 'HIGH-CONFIDENCE VERIFIED TRANSACTION';
+      }
+      if (badgeEl) {
+        badgeEl.className = 'status-badge status-success status-badge-lg';
+        badgeEl.textContent = '→ Safe for Rapid Refund';
+      }
+      if (descEl) {
+        descEl.textContent = 'All 9 multi-source verification checkpoints satisfied. The system can safely disburse refund without waiting for batch settlement.';
+      }
+    } else if (txn.id === 2) {
+      // Case 2: Delayed recovery
+      if (txn.status === 'REFUNDED') {
+        if (bankStatEl) {
+          bankStatEl.className = 'evidence-status match';
+          bankStatEl.textContent = '✓ LATE CONFIRMED';
+        }
+        if (headlineEl) {
+          headlineEl.className = 'text-green text-xl font-extra mb-8';
+          headlineEl.textContent = 'HIGH-CONFIDENCE VERIFIED TRANSACTION';
+        }
+        if (badgeEl) {
+          badgeEl.className = 'status-badge status-success status-badge-lg';
+          badgeEl.textContent = '→ Safe for Rapid Refund';
+        }
+      } else {
+        if (bankStatEl) {
+          bankStatEl.className = 'evidence-status pending';
+          bankStatEl.textContent = '⏳ PENDING (Awaiting)';
+        }
+        if (headlineEl) {
+          headlineEl.className = 'text-yellow text-xl font-extra mb-8';
+          headlineEl.textContent = 'TRANSACTION MONITORING IN PROGRESS';
+        }
+        if (badgeEl) {
+          badgeEl.className = 'status-badge status-warning status-badge-lg';
+          badgeEl.textContent = '→ Preserving Evidence Trail';
+        }
+        if (descEl) {
+          descEl.textContent = 'Bank debit receipt is pending. Cryptographic evidence is safely preserved in the ledger until confirmation arrives.';
+        }
+      }
+    } else {
+      // Case 3: Missing / Uncertain
+      if (bankStatEl) {
+        bankStatEl.className = 'evidence-status missing';
+        bankStatEl.textContent = '❌ NO DEBIT RECORDED';
+      }
+      if (headlineEl) {
+        headlineEl.className = 'text-red text-xl font-extra mb-8';
+        headlineEl.textContent = 'VERIFICATION INCOMPLETE — UNCERTAIN DEBIT';
+      }
+      if (badgeEl) {
+        badgeEl.className = 'status-badge status-danger status-badge-lg';
+        badgeEl.textContent = '→ Auto-Refund Strictly Blocked';
+      }
+      if (descEl) {
+        descEl.textContent = 'Authoritative debit evidence is missing. The system prevents wrongful disbursements and moves transaction to the Exception Queue.';
+      }
+    }
+  }
+
+  // Interactive Verification Matrix Evaluation Button
+  const btnRunMatrixEval = $('#btn-run-matrix-eval');
+  if (btnRunMatrixEval) {
+    btnRunMatrixEval.addEventListener('click', async () => {
+      btnRunMatrixEval.disabled = true;
+      btnRunMatrixEval.textContent = '⏳ Evaluating Matrix...';
+
+      const rows = $$('#evidence-matrix tbody tr');
+      for (let i = 0; i < rows.length; i++) {
+        await sleep(150);
+        rows[i].style.transition = 'background 0.25s ease';
+        rows[i].style.background = '#f0fdf4';
+      }
+
+      const activeTxn = transactionDatabase.find(t => t.id === currentTxnId);
+      if (activeTxn) updateEvidenceMatrixForTxn(activeTxn);
+
+      btnRunMatrixEval.disabled = false;
+      btnRunMatrixEval.textContent = '✅ Matrix Verified';
+      logUserAction(currentTxnId, 'Ran Multi-Source Evidence Matrix verification.');
+    });
+  }
+
+  // =============================================
+  // IMMUTABLE EVENT CHAIN TAMPERING & RESET (PAGE 12)
+  // =============================================
+  const chainTamperBtn = $('#chain-tamper-btn');
+  const chainResetBtn = $('#chain-reset-btn');
+
+  if (chainTamperBtn) {
+    chainTamperBtn.addEventListener('click', () => {
+      // 1. In-page visual modification
+      const amountEl = $('#chain-amount-3');
+      if (amountEl) {
+        amountEl.innerHTML = '<span class="tampered-text">Amount: ₹1,499</span> → <span class="tampered-new">₹2,499</span>';
+      }
+      const block3 = $('#chain-event-3');
+      if (block3) block3.classList.add('tampered');
+
+      const link3 = $('#chain-link-3');
+      const link4 = $('#chain-link-4');
+      if (link3) link3.classList.add('broken');
+      if (link4) link4.classList.add('broken');
+
+      // 2. Show prominent in-page result card directly below
+      const result = $('#chain-tamper-result');
+      if (result) {
+        result.classList.remove('hidden');
+        result.style.animation = 'fadeInUp 0.3s ease';
+      }
+
+      chainTamperBtn.disabled = true;
+      chainTamperBtn.textContent = '⚠️ Tampered';
+
+      // 3. Update active transaction state
+      applyTerminalState(
+        'INVALID_TAMPERED',
+        'Historical EVENT 3 modified (₹1,499 ➔ ₹2,499). SHA-256 hash pointer broken. Automatic refund pipeline permanently aborted.',
+        'status-danger'
+      );
+    });
+  }
+
+  if (chainResetBtn) {
+    chainResetBtn.addEventListener('click', () => {
+      // 1. Reset in-page visual
+      const amountEl = $('#chain-amount-3');
+      if (amountEl) {
+        amountEl.innerHTML = 'Amount: ₹1,499';
+      }
+      const block3 = $('#chain-event-3');
+      if (block3) block3.classList.remove('tampered');
+
+      const link3 = $('#chain-link-3');
+      const link4 = $('#chain-link-4');
+      if (link3) link3.classList.remove('broken');
+      if (link4) link4.classList.remove('broken');
+
+      // 2. Hide result
+      const result = $('#chain-tamper-result');
+      if (result) result.classList.add('hidden');
+
+      if (chainTamperBtn) {
+        chainTamperBtn.disabled = false;
+        chainTamperBtn.textContent = '⚠️ Alter Historical Event';
+      }
+
+      logUserAction(currentTxnId, 'Reset cryptographic event chain to valid state.');
     });
   }
 

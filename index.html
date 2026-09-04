@@ -27,7 +27,6 @@
     
     <div class="txn-controls-group">
       <button class="btn btn-primary" id="global-start-btn" style="padding:6px 14px;font-size:12px;">▶ Start Txn</button>
-      <button class="btn btn-secondary" id="global-pause-btn" style="padding:6px 14px;font-size:12px;">⏸ Pause</button>
       <button class="btn btn-success" id="global-refund-received-btn" style="padding:6px 14px;font-size:12px;">✅ Payment Received / Stop Engine</button>
     </div>
   </header>
@@ -675,41 +674,46 @@
     <div class="page-header animate-on-scroll">
       <div class="page-badge">PAGE 11 — EVIDENCE ENGINE</div>
       <h2 class="page-title">Evidence Correlation Engine</h2>
-      <p class="page-subtitle">Multi-source evidence verification matrix</p>
+      <p class="page-subtitle">Multi-source evidence verification matrix for active transaction (<span id="mat-active-txnid" class="mono">TXN-01</span>)</p>
     </div>
 
     <div class="grid-2">
       <div class="card animate-on-scroll">
-        <div class="card-header"><span class="card-icon">📊</span> Multi-Source Evidence Matrix</div>
+        <div class="card-header justify-between">
+          <div class="flex items-center gap-8"><span class="card-icon">📊</span> Multi-Source Evidence Matrix</div>
+          <button class="btn btn-primary" id="btn-run-matrix-eval" style="padding:4px 12px;font-size:11.5px;">▶ Run Verification</button>
+        </div>
         <table class="evidence-table" id="evidence-matrix">
-          <thead><tr><th>Evidence Field</th><th>Verification Status</th></tr></thead>
+          <thead><tr><th>Evidence Field</th><th>Recorded Value</th><th>Status</th></tr></thead>
           <tbody>
-            <tr><td>Transaction ID</td><td><span class="evidence-status" data-target="match">—</span></td></tr>
-            <tr><td>Order ID</td><td><span class="evidence-status" data-target="match">—</span></td></tr>
-            <tr><td>Amount</td><td><span class="evidence-status" data-target="match">—</span></td></tr>
-            <tr><td>Timestamp</td><td><span class="evidence-status" data-target="match">—</span></td></tr>
-            <tr><td>Gateway Response</td><td><span class="evidence-status" data-target="match">—</span></td></tr>
-            <tr><td>Bank Confirmation</td><td><span class="evidence-status" data-target="match">—</span></td></tr>
-            <tr><td>RRN / Reference</td><td><span class="evidence-status" data-target="match">—</span></td></tr>
-            <tr><td>Cryptographic Integrity</td><td><span class="evidence-status" data-target="match">—</span></td></tr>
-            <tr><td>Duplicate Refund Check</td><td><span class="evidence-status" data-target="match">—</span></td></tr>
+            <tr><td>Transaction ID</td><td class="mono" id="mat-val-txnid">TXN784529101</td><td><span class="evidence-status match" id="mat-stat-txnid">✓ MATCH</span></td></tr>
+            <tr><td>Order ID</td><td class="mono" id="mat-val-orderid">ORD-20260904-7842</td><td><span class="evidence-status match" id="mat-stat-orderid">✓ MATCH</span></td></tr>
+            <tr><td>Amount</td><td class="mono text-cyan" id="mat-val-amount">₹1,499</td><td><span class="evidence-status match" id="mat-stat-amount">✓ MATCH</span></td></tr>
+            <tr><td>Timestamp</td><td class="mono" id="mat-val-time">10:00:00.000</td><td><span class="evidence-status match" id="mat-stat-time">✓ VALID</span></td></tr>
+            <tr><td>Gateway Response</td><td class="mono text-yellow" id="mat-val-gw">TIMEOUT_RETRY_FAILED</td><td><span class="evidence-status match" id="mat-stat-gw">✓ RECEIVED</span></td></tr>
+            <tr><td>Bank Confirmation</td><td class="mono text-green" id="mat-val-bank">DEBIT_CONFIRMED</td><td><span class="evidence-status match" id="mat-stat-bank">✓ CONFIRMED</span></td></tr>
+            <tr><td>RRN / Reference</td><td class="mono" id="mat-val-rrn">RRN4829104821</td><td><span class="evidence-status match" id="mat-stat-rrn">✓ MATCH</span></td></tr>
+            <tr><td>Cryptographic Integrity</td><td class="mono text-cyan" id="mat-val-crypto">A7F3-19BC-42D8</td><td><span class="evidence-status match" id="mat-stat-crypto">✓ RSA-PSS OK</span></td></tr>
+            <tr><td>Duplicate Refund Check</td><td class="mono text-green" id="mat-val-dup">0 Prior Claims</td><td><span class="evidence-status match" id="mat-stat-dup">✓ PASSED</span></td></tr>
           </tbody>
         </table>
       </div>
 
       <div class="flex flex-col gap-20">
-        <div class="card animate-on-scroll text-center" id="evidence-decision" style="opacity:0.35">
-          <div class="card-header justify-center"><span class="card-icon">🧠</span> Decision</div>
-          <div class="text-green text-xl font-extra mb-8">HIGH-CONFIDENCE VERIFIED TRANSACTION</div>
-          <div class="status-badge status-success status-badge-lg">→ Refund Eligible</div>
+        <div class="card animate-on-scroll text-center" id="evidence-decision">
+          <div class="card-header justify-center"><span class="card-icon">🧠</span> Automated Decision</div>
+          <div class="text-green text-xl font-extra mb-8" id="decision-headline">HIGH-CONFIDENCE VERIFIED TRANSACTION</div>
+          <div class="status-badge status-success status-badge-lg" id="decision-subbadge">→ Safe for Rapid Refund</div>
+          <p class="text-secondary mt-12" id="decision-desc" style="font-size:12.5px;">All 9 multi-source verification checkpoints satisfied. The system can safely disburse refund without waiting for batch settlement.</p>
         </div>
 
         <div class="card animate-on-scroll">
-          <div class="card-header"><span class="card-icon">⚠️</span> Incomplete Evidence Fallback</div>
+          <div class="card-header"><span class="card-icon">⚠️</span> Incomplete Evidence Fallback Policy</div>
           <div class="text-center">
-            <div class="text-yellow text-lg font-bold mb-8">VERIFICATION INCOMPLETE</div>
-            <div class="status-badge status-warning">→ No Automatic Refund</div>
+            <div class="text-yellow text-lg font-bold mb-4">VERIFICATION INCOMPLETE POLICY</div>
+            <div class="status-badge status-warning">→ Automatic Refund Strictly Blocked</div>
           </div>
+          <p class="text-secondary mt-8 text-center" style="font-size:12px;">If Bank Debit confirmation is missing or RRN does not correlate, transaction is held in reconciliation queue.</p>
         </div>
       </div>
     </div>
@@ -734,7 +738,7 @@
               <span class="chain-block-title">EVENT 1 — Payment Initiated</span>
               <span class="chain-block-hash">Hash: 8F2A...</span>
             </div>
-            <div class="chain-block-detail">Amount: ₹1,499 | Prev: GENESIS</div>
+            <div class="chain-block-detail"><span id="chain-amount-1">Amount: ₹1,499</span> | Prev: GENESIS</div>
           </div>
           <div class="chain-link"></div>
           <div class="chain-block" data-event="2">
@@ -748,7 +752,7 @@
           <div class="chain-block" data-event="3" id="chain-event-3">
             <div class="chain-block-header">
               <span class="chain-block-title">EVENT 3 — Debit Confirmed</span>
-              <span class="chain-block-hash">Hash: 19DA...</span>
+              <span class="chain-block-hash" id="chain-hash-3">Hash: 19DA...</span>
             </div>
             <div class="chain-block-detail"><span id="chain-amount-3">Amount: ₹1,499</span> | Prev: B71C...</div>
           </div>
@@ -774,12 +778,23 @@
       <div class="flex flex-col gap-20">
         <div class="card animate-on-scroll">
           <div class="card-header"><span class="card-icon">🚨</span> Simulate Chain Tampering</div>
-          <p class="text-secondary mb-16">Simulate altering historical EVENT 3 Amount to ₹2,499:</p>
-          <button class="btn btn-danger" id="chain-tamper-btn">⚠️ Alter Historical Event</button>
-          <div id="chain-tamper-result" class="hidden mt-20">
+          <p class="text-secondary mb-16">Simulate altering historical EVENT 3 Amount to ₹2,499 in the tamper-evident ledger:</p>
+          <div class="flex gap-8 mb-16">
+            <button class="btn btn-danger" id="chain-tamper-btn">⚠️ Alter Historical Event</button>
+            <button class="btn btn-secondary" id="chain-reset-btn">↺ Reset Chain</button>
+          </div>
+
+          <!-- Prominent In-Page Tamper Detection Result Box -->
+          <div id="chain-tamper-result" class="hidden">
             <div class="danger-box">
               <div class="text-red text-lg font-extra text-center mb-8">🔴 CHAIN INTEGRITY FAILURE</div>
-              <p class="text-center">“Historical evidence has been altered or no longer matches the recorded integrity proof.”</p>
+              <p class="text-center font-bold" style="color:#991b1b;margin-bottom:8px;">“Historical evidence has been altered or no longer matches the recorded integrity proof.”</p>
+              <div style="background:#ffffff;padding:12px;border-radius:6px;border:1px solid #fecaca;font-size:12px;">
+                <div><strong>Corrupted Block:</strong> EVENT 3 (Debit Confirmed)</div>
+                <div><strong>Detected Value:</strong> Amount ₹2,499 (Expected ₹1,499)</div>
+                <div><strong>Hash Breakdown:</strong> Calculated SHA-256(Block 3) ≠ Block 4 Previous Hash Pointer</div>
+                <div><strong>Status:</strong> Ledger Chain Invalidated & Flagged for Security Audit</div>
+              </div>
             </div>
           </div>
         </div>
